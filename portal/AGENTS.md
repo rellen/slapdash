@@ -766,13 +766,11 @@ And **never** do this:
 ## shoddy usage
 _Small functions for tasks that occur frequently in Elixir code._
 
-# Usage rules for Shoddy
-
 Shoddy is a library of small functions for tasks that occur frequently in
 Elixir code. These rules tell an AI agent how to use the library correctly.
 The documentation of each module gives the full description.
 
-## General rules
+### General rules
 
 - Use the standard library if it has a function for the task. Use Shoddy
   for a task that the standard library does not do in one call.
@@ -787,7 +785,7 @@ The documentation of each module gives the full description.
 - The functions compare with `===/2`. Thus `1` and `1.0` are two different
   keys.
 
-## The suffix of a name
+### The suffix of a name
 
 - `_if` tests a value that the function also uses. The value must be
   truthy, which means not `nil` and not `false`. Zero, `""` and `[]` are
@@ -805,7 +803,7 @@ Examples of these rules:
 - To treat `""` as no value, change it to `nil` first with
   `Shoddy.Strings.presence/1`.
 
-## Results
+### Results
 
 - `Shoddy.Result` accepts `{:ok, value}`, `:ok`, `{:error, reason}` and
   `:error`. It does not accept a tuple of three elements. Give such a tuple
@@ -819,9 +817,11 @@ Examples of these rules:
   error. `Shoddy.Parse.integer!/2` and `Shoddy.Parse.float!/2` raise.
 - The functions of `Shoddy.Env` raise an exception for an absent variable
   or a wrong value. Use them in `config/runtime.exs`, and give the option
-  `:default` for an optional variable.
+  `:default` for an optional variable. Without a default, they raise
+  `ArgumentError`, also for an absent variable. Give the option `:hint` to
+  tell an operator how to correct the variable.
 
-## Functions that an agent can use incorrectly
+### Functions that an agent can use incorrectly
 
 - `Shoddy.Tagging.reply/2` and `Shoddy.Tagging.stop/2` take the reply or
   the reason first. At the end of a pipeline of the state, use
@@ -849,8 +849,10 @@ Examples of these rules:
   string of whitespace and for a value that is not a string.
   `Shoddy.Strings.blank?/1` raises for a value that is not `nil` and not a
   string.
+- `Shoddy.Env.uri/2` returns the URL as a string. `Shoddy.Parse.uri/2`
+  returns a `URI` struct.
 
-## Tests
+### Tests
 
 - Use `Shoddy.Tests` only in an ExUnit test. A release does not contain
   ExUnit.

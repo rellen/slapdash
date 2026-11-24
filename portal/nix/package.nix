@@ -45,7 +45,7 @@ let
         (root + "/config")
       ];
     };
-    hash = "sha256-Sxf7CyBW/P+ef5OACckex2Aibgq0OMFMIIVZ9QVona8=";
+    hash = "sha256-FCvokmW2ndptjReLrwXHYFuUo5zVhqjWEBUaGfWGbzk=";
   };
 in
 beamPackages.mixRelease {

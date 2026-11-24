@@ -88,7 +88,7 @@ config :swoosh, :api_client, Swoosh.ApiClient.Req
 # Configure esbuild (the version is required). It bundles both app.js and
 # app.css; there is no CSS framework or Node.js toolchain.
 config :esbuild,
-  version: "0.25.4",
+  version: "0.27.2",
   # Use an existing esbuild binary instead of downloading one when set, for
   # example by the Nix build and dev shell.
   path: System.get_env("MIX_ESBUILD_PATH"),
