@@ -1,4 +1,4 @@
-# The Ramshackle server as a Mix release.
+# The Slapdash server as a Mix release.
 #
 # `beamPackages` must be a package set built on the Erlang/OTP and Elixir
 # versions the project targets (see the root flake.nix).
@@ -35,7 +35,7 @@ let
   # Hex and git dependencies, fetched by `mix deps.get`. When mix.lock
   # changes, set `hash` to lib.fakeHash, build, and copy the hash Nix reports.
   mixFodDeps = beamPackages.fetchMixDeps {
-    pname = "ramshackle-mix-deps";
+    pname = "slapdash-mix-deps";
     inherit version;
     src = lib.fileset.toSource {
       inherit root;
@@ -49,7 +49,7 @@ let
   };
 in
 beamPackages.mixRelease {
-  pname = "ramshackle";
+  pname = "slapdash";
   inherit version src mixFodDeps;
 
   # The :esbuild Mix package downloads its binary on first use. Point it at
@@ -77,9 +77,9 @@ beamPackages.mixRelease {
 
   meta = {
     description = "Self-hosted manager for software repositories and the applications running from them";
-    homepage = "https://github.com/rellen/ramshackle";
+    homepage = "https://github.com/rellen/slapdash";
     license = lib.licenses.asl20;
-    mainProgram = "ramshackle";
+    mainProgram = "slapdash";
     platforms = lib.platforms.unix;
   };
 }

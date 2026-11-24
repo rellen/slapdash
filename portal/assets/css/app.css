@@ -1,5 +1,5 @@
 /*
-  Ramshackle styles: layered, classless CSS with homegrown components.
+  Slapdash styles: layered, classless CSS with homegrown components.
 
   The layer order below is the cascade order, lowest priority first. Each
   file is imported into its own layer, so a later layer always wins over an
@@ -22,4 +22,4 @@
 @import "./base.css" layer(base);
 @import "./layout.css" layer(layout);
 @import "./components.css" layer(components);
-@import "phoenix-colocated/ramshackle/colocated.css" layer(colocated);
+@import "phoenix-colocated/slapdash/colocated.css" layer(colocated);

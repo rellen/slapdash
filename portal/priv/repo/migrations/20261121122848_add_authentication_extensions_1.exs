@@ -1,4 +1,4 @@
-defmodule Ramshackle.Repo.Migrations.AddAuthenticationExtensions1 do
+defmodule Slapdash.Repo.Migrations.AddAuthenticationExtensions1 do
   @moduledoc """
   Installs any extensions that are mentioned in the repo's `installed_extensions/0` callback
 

@@ -1,6 +1,6 @@
-# Ramshackle
+# Slapdash
 
-Ramshackle is a self-hosted system that runs software bots on code
+Slapdash is a self-hosted system that runs software bots on code
 repositories and the applications that run from them. It has three parts:
 
 1. The portal: the developer portal and control plane. It holds users,
@@ -71,9 +71,9 @@ project. Each project keeps its Nix expressions in its own `nix/` directory
 
 | Output | What it is |
 | --- | --- |
-| `packages.<system>.ramshackle` (`default`) | The `portal/` Mix release |
+| `packages.<system>.slapdash` (`default`) | The `portal/` Mix release |
 | `packages.<linux>.container` | OCI image of the release |
-| `nixosModules.ramshackle` (`default`) | `services.ramshackle` |
+| `nixosModules.slapdash` (`default`) | `services.slapdash` |
 | `devShells.<system>.portal` (`default`) | Toolchain for `portal/` |
 | `checks.<system>.*` | Package and image builds, Nix formatting, and a NixOS VM test of the module |
 
@@ -81,7 +81,7 @@ project. Each project keeps its Nix expressions in its own `nix/` directory
   or `flake.lock`, and `nix fmt` to format Nix files.
 - When `portal/mix.lock` changes, update the `hash` of `mixFodDeps` in
   `portal/nix/package.nix`: set it to `lib.fakeHash`, run
-  `nix build .#ramshackle`, and copy the hash Nix reports.
+  `nix build .#slapdash`, and copy the hash Nix reports.
 - A new project adds `<project>/nix/shell.nix` and a `devShells` entry.
 
 ## Writing

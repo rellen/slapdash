@@ -1,4 +1,4 @@
-defmodule Ramshackle.Repo.Migrations.AddAuthentication do
+defmodule Slapdash.Repo.Migrations.AddAuthentication do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 

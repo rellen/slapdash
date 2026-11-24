@@ -1,4 +1,4 @@
-# NixOS module: services.ramshackle runs the Ramshackle server as a systemd
+# NixOS module: services.slapdash runs the Slapdash server as a systemd
 # service, optionally with a local PostgreSQL database.
 { self }:
 {
@@ -9,7 +9,7 @@
 }:
 
 let
-  cfg = config.services.ramshackle;
+  cfg = config.services.slapdash;
 
   inherit (lib)
     literalExpression
@@ -34,15 +34,15 @@ let
     POOL_SIZE = toString cfg.database.poolSize;
     # The release writes its generated runtime configuration here. The
     # default, inside the release, is the read-only Nix store.
-    RELEASE_TMP = "/run/ramshackle";
-    # Erlang distribution on loopback only, so `ramshackle-rpc` and
-    # `ramshackle-remote` can reach the running node. epmd and the
+    RELEASE_TMP = "/run/slapdash";
+    # Erlang distribution on loopback only, so `slapdash-rpc` and
+    # `slapdash-remote` can reach the running node. epmd and the
     # distribution listener bind 127.0.0.1, and the node is named by IP so
     # nothing depends on how the host name resolves. The cookie is created
     # on first start, readable by the service user only.
     RELEASE_DISTRIBUTION = "name";
-    RELEASE_NODE = "ramshackle@127.0.0.1";
-    RELEASE_COOKIE_FILE = "/var/lib/ramshackle/cookie";
+    RELEASE_NODE = "slapdash@127.0.0.1";
+    RELEASE_COOKIE_FILE = "/var/lib/slapdash/cookie";
     ERL_EPMD_ADDRESS = "127.0.0.1";
     ELIXIR_ERL_OPTIONS = "-kernel inet_dist_use_interface {127,0,0,1}";
     LANG = "C.UTF-8";
@@ -52,25 +52,25 @@ let
 
   # Reads the master key from its systemd credential into the environment the
   # release expects, then runs the given release command.
-  withSecrets = pkgs.writeShellScript "ramshackle-with-secrets" ''
+  withSecrets = pkgs.writeShellScript "slapdash-with-secrets" ''
     set -euo pipefail
-    RAMSHACKLE_MASTER_KEY="$(< "$CREDENTIALS_DIRECTORY/master_key")"
-    export RAMSHACKLE_MASTER_KEY
+    SLAPDASH_MASTER_KEY="$(< "$CREDENTIALS_DIRECTORY/master_key")"
+    export SLAPDASH_MASTER_KEY
     exec "$@"
   '';
 
-  # Admin commands that run `bin/ramshackle` as the service user, with the
+  # Admin commands that run `bin/slapdash` as the service user, with the
   # service's environment, in a transient systemd unit:
   #
-  # - `ramshackle-eval EXPR` starts a fresh VM with only what EXPR needs, so
+  # - `slapdash-eval EXPR` starts a fresh VM with only what EXPR needs, so
   #   it works whether or not the server is running. Used to onboard root.
-  # - `ramshackle-rpc EXPR` runs EXPR inside the running server.
-  # - `ramshackle-remote` opens an IEx shell on the running server.
+  # - `slapdash-rpc EXPR` runs EXPR inside the running server.
+  # - `slapdash-remote` opens an IEx shell on the running server.
   #
   # rpc and remote reach the server over loopback Erlang distribution with
-  # the cookie in /var/lib/ramshackle/cookie.
+  # the cookie in /var/lib/slapdash/cookie.
   adminEnvironment = environment // {
-    RELEASE_TMP = "/run/ramshackle-admin";
+    RELEASE_TMP = "/run/slapdash-admin";
   };
 
   releaseCommand =
@@ -92,9 +92,9 @@ let
       exec ${config.systemd.package}/bin/systemd-run --quiet --wait --collect ${systemdRunFlags} \
         --uid=${cfg.database.user} --gid=${cfg.database.user} \
         --property=LoadCredential=master_key:${cfg.masterKeyFile} \
-        --property=StateDirectory=ramshackle \
-        --property=RuntimeDirectory=ramshackle-admin \
-        --property=WorkingDirectory=/var/lib/ramshackle \
+        --property=StateDirectory=slapdash \
+        --property=RuntimeDirectory=slapdash-admin \
+        --property=WorkingDirectory=/var/lib/slapdash \
         ${
           lib.optionalString (cfg.environmentFile != null) "--property=EnvironmentFile=${cfg.environmentFile}"
         } \
@@ -103,28 +103,28 @@ let
             lib.mapAttrsToList (name: value: lib.escapeShellArg "--setenv=${name}=${value}") adminEnvironment
           )
         } \
-        -- ${withSecrets} ${cfg.package}/bin/ramshackle ${command} ${args}
+        -- ${withSecrets} ${cfg.package}/bin/slapdash ${command} ${args}
     '';
 
-  rootExample = "'Ramshackle.Release.create_root(\"you@example.com\", public_url: \"https://ramshackle.example.com\")'";
+  rootExample = "'Slapdash.Release.create_root(\"you@example.com\", public_url: \"https://slapdash.example.com\")'";
 
   adminCommands = [
     (releaseCommand {
-      name = "ramshackle-eval";
+      name = "slapdash-eval";
       usage = rootExample;
       command = "eval";
       args = ''"$1"'';
       systemdRunFlags = "--pipe";
     })
     (releaseCommand {
-      name = "ramshackle-rpc";
+      name = "slapdash-rpc";
       usage = "'IO.inspect(node())'";
       command = "rpc";
       args = ''"$1"'';
       systemdRunFlags = "--pipe";
     })
     (releaseCommand {
-      name = "ramshackle-remote";
+      name = "slapdash-remote";
       usage = null;
       command = "remote";
       args = "";
@@ -142,13 +142,13 @@ in
           (
             [
               "services"
-              "ramshackle"
+              "slapdash"
             ]
             ++ path
           )
           ''
-            Ramshackle now keeps this in its database: sign in as root and set it in the
-            admin pages. The service only needs services.ramshackle.masterKeyFile.
+            Slapdash now keeps this in its database: sign in as root and set it in the
+            admin pages. The service only needs services.slapdash.masterKeyFile.
           ''
       )
       [
@@ -170,14 +170,14 @@ in
         [ "mailFrom" ]
       ];
 
-  options.services.ramshackle = {
-    enable = mkEnableOption "the Ramshackle server";
+  options.services.slapdash = {
+    enable = mkEnableOption "the Slapdash server";
 
     package = mkOption {
       type = types.package;
-      default = self.packages.${pkgs.stdenv.hostPlatform.system}.ramshackle;
-      defaultText = literalExpression "ramshackle.packages.\${pkgs.stdenv.hostPlatform.system}.ramshackle";
-      description = "The Ramshackle release to run.";
+      default = self.packages.${pkgs.stdenv.hostPlatform.system}.slapdash;
+      defaultText = literalExpression "slapdash.packages.\${pkgs.stdenv.hostPlatform.system}.slapdash";
+      description = "The Slapdash release to run.";
     };
 
     port = mkOption {
@@ -189,15 +189,15 @@ in
     openFirewall = mkOption {
       type = types.bool;
       default = false;
-      description = "Whether to open {option}`services.ramshackle.port` in the firewall.";
+      description = "Whether to open {option}`services.slapdash.port` in the firewall.";
     };
 
     masterKeyFile = mkOption {
       type = secretPath;
-      example = "/run/secrets/ramshackle-master-key";
+      example = "/run/secrets/slapdash-master-key";
       description = ''
         File holding the master key: 32 random bytes, Base64-encoded, from
-        `openssl rand -base64 32`. It encrypts every secret Ramshackle stores
+        `openssl rand -base64 32`. It encrypts every secret Slapdash stores
         in its database, including the ones it generates on first boot, so
         back it up apart from the database: without it they cannot be read.
         It is passed to the service as a systemd credential, so it can be
@@ -205,11 +205,11 @@ in
 
         Everything else (the public URL, mail, GitHub sign-in, tenants) is
         configured by root in the admin pages. Onboard root with
-        `ramshackle-eval`, which this module installs:
+        `slapdash-eval`, which this module installs:
 
-            ramshackle-eval 'Ramshackle.Release.create_root("you@example.com", public_url: "https://ramshackle.example.com")'
+            slapdash-eval 'Slapdash.Release.create_root("you@example.com", public_url: "https://slapdash.example.com")'
 
-        `ramshackle-rpc EXPR` and `ramshackle-remote` reach the running server
+        `slapdash-rpc EXPR` and `slapdash-remote` reach the running server
         over Erlang distribution on 127.0.0.1.
       '';
     };
@@ -217,7 +217,7 @@ in
     environmentFile = mkOption {
       type = types.nullOr types.path;
       default = null;
-      example = "/run/secrets/ramshackle.env";
+      example = "/run/secrets/slapdash.env";
       description = ''
         Optional file of `NAME=value` lines added to the service environment.
         Use it for secrets such as a `DATABASE_URL` that holds a password.
@@ -233,7 +233,7 @@ in
       description = ''
         Extra environment variables for the server. They end up in the Nix
         store, so do not put secrets here; use
-        {option}`services.ramshackle.environmentFile` instead.
+        {option}`services.slapdash.environmentFile` instead.
       '';
     };
 
@@ -243,23 +243,23 @@ in
         default = true;
         description = ''
           Whether to run PostgreSQL on this machine and create the database
-          and role for Ramshackle. The server connects over the Unix socket
+          and role for Slapdash. The server connects over the Unix socket
           with peer authentication, so no password is needed.
         '';
       };
 
       name = mkOption {
         type = types.str;
-        default = "ramshackle";
+        default = "slapdash";
         description = "Name of the PostgreSQL database.";
       };
 
       user = mkOption {
         type = types.str;
-        default = "ramshackle";
+        default = "slapdash";
         description = ''
           PostgreSQL role and system user the server runs as. With
-          {option}`services.ramshackle.database.createLocally`, the role owns
+          {option}`services.slapdash.database.createLocally`, the role owns
           the database.
         '';
       };
@@ -268,13 +268,13 @@ in
         type = types.nullOr types.str;
         default = if cfg.database.createLocally then localDatabaseUrl else null;
         defaultText = literalExpression ''
-          if config.services.ramshackle.database.createLocally
+          if config.services.slapdash.database.createLocally
           then "ecto://''${user}@localhost/''${name}?socket_dir=/run/postgresql"
           else null
         '';
         description = ''
           Ecto URL of the database. Set it to `null` and put `DATABASE_URL`
-          in {option}`services.ramshackle.environmentFile` when the URL holds
+          in {option}`services.slapdash.environmentFile` when the URL holds
           a password.
         '';
       };
@@ -291,19 +291,19 @@ in
     assertions = [
       {
         assertion = cfg.database.url != null || cfg.environmentFile != null;
-        message = "services.ramshackle needs database.url, or a DATABASE_URL in environmentFile.";
+        message = "services.slapdash needs database.url, or a DATABASE_URL in environmentFile.";
       }
       {
         assertion =
           cfg.database.createLocally -> lib.versionAtLeast config.services.postgresql.package.version "17";
-        message = "services.ramshackle needs PostgreSQL 17 or later. Set services.postgresql.package = pkgs.postgresql_17 (migrate any existing cluster first).";
+        message = "services.slapdash needs PostgreSQL 17 or later. Set services.postgresql.package = pkgs.postgresql_17 (migrate any existing cluster first).";
       }
     ];
 
     users.users.${cfg.database.user} = {
       isSystemUser = true;
       group = cfg.database.user;
-      description = "Ramshackle server";
+      description = "Slapdash server";
     };
     users.groups.${cfg.database.user} = { };
 
@@ -322,8 +322,8 @@ in
 
     environment.systemPackages = adminCommands;
 
-    systemd.services.ramshackle = {
-      description = "Ramshackle server";
+    systemd.services.slapdash = {
+      description = "Slapdash server";
       wantedBy = [ "multi-user.target" ];
       wants = [ "network-online.target" ];
       after = [ "network-online.target" ] ++ optional cfg.database.createLocally "postgresql.target";
@@ -337,17 +337,17 @@ in
         Group = cfg.database.user;
         ExecStartPre = "${withSecrets} ${cfg.package}/bin/migrate";
         ExecStart = "${withSecrets} ${cfg.package}/bin/server";
-        ExecStop = "${withSecrets} ${cfg.package}/bin/ramshackle stop";
+        ExecStop = "${withSecrets} ${cfg.package}/bin/slapdash stop";
         EnvironmentFile = mkIf (cfg.environmentFile != null) cfg.environmentFile;
         LoadCredential = [ "master_key:${cfg.masterKeyFile}" ];
         Restart = "on-failure";
         RestartSec = 5;
 
-        StateDirectory = "ramshackle";
+        StateDirectory = "slapdash";
         StateDirectoryMode = "0750";
-        RuntimeDirectory = "ramshackle";
+        RuntimeDirectory = "slapdash";
         RuntimeDirectoryMode = "0750";
-        WorkingDirectory = "/var/lib/ramshackle";
+        WorkingDirectory = "/var/lib/slapdash";
 
         # Hardening. The BEAM JIT needs writable and executable memory, so
         # MemoryDenyWriteExecute stays off.

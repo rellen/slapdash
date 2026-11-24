@@ -26,7 +26,7 @@
     },
     {
       "allow_nil?": true,
-      "default": "\"Ramshackle\"",
+      "default": "\"Slapdash\"",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
@@ -95,7 +95,7 @@
     "global": null,
     "strategy": null
   },
-  "repo": "Elixir.Ramshackle.Repo",
+  "repo": "Elixir.Slapdash.Repo",
   "schema": null,
   "table": "instance_settings",
   "temporal": null

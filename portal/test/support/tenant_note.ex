@@ -1,14 +1,14 @@
-defmodule Ramshackle.Test.TenantNote do
+defmodule Slapdash.Test.TenantNote do
   @moduledoc """
   A test-only resource stored per tenant (`multitenancy strategy :context`)
   in ETS, so the authorization of tenant data can be tested without a
   tenant migration.
   """
   use Ash.Resource,
-    domain: Ramshackle.Test.Domain,
+    domain: Slapdash.Test.Domain,
     data_layer: Ash.DataLayer.Ets,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [Ramshackle.Authz.Resource]
+    extensions: [Slapdash.Authz.Resource]
 
   ets do
     private? false
@@ -25,11 +25,11 @@ defmodule Ramshackle.Test.TenantNote do
 
   policies do
     policy action_type(:read) do
-      authorize_if Ramshackle.Authz.FilterCheck
+      authorize_if Slapdash.Authz.FilterCheck
     end
 
     policy action_type([:create, :update, :destroy]) do
-      authorize_if Ramshackle.Authz.Check
+      authorize_if Slapdash.Authz.Check
     end
   end
 

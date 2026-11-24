@@ -1,9 +1,9 @@
-defmodule Ramshackle.MixProject do
+defmodule Slapdash.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :ramshackle,
+      app: :slapdash,
       version: "0.1.0",
       elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -46,7 +46,7 @@ defmodule Ramshackle.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Ramshackle.Application, []},
+      mod: {Slapdash.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -115,10 +115,10 @@ defmodule Ramshackle.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ash.setup --quiet", "test"],
       "assets.setup": ["esbuild.install --if-missing"],
-      "assets.build": ["compile", "esbuild ramshackle", "esbuild ramshackle_css"],
+      "assets.build": ["compile", "esbuild slapdash", "esbuild slapdash_css"],
       "assets.deploy": [
-        "esbuild ramshackle --minify",
-        "esbuild ramshackle_css --minify",
+        "esbuild slapdash --minify",
+        "esbuild slapdash_css --minify",
         "phx.digest"
       ],
       precommit: [

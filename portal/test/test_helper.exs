@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(Ramshackle.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(Slapdash.Repo, :manual)

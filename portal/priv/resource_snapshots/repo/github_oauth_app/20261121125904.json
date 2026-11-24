@@ -83,7 +83,7 @@
     "global": null,
     "strategy": null
   },
-  "repo": "Elixir.Ramshackle.Repo",
+  "repo": "Elixir.Slapdash.Repo",
   "schema": null,
   "table": "github_oauth_app",
   "temporal": null

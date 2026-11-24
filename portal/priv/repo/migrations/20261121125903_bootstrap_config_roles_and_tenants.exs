@@ -1,4 +1,4 @@
-defmodule Ramshackle.Repo.Migrations.BootstrapConfigRolesAndTenants do
+defmodule Slapdash.Repo.Migrations.BootstrapConfigRolesAndTenants do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -49,7 +49,7 @@ defmodule Ramshackle.Repo.Migrations.BootstrapConfigRolesAndTenants do
     create table(:instance_settings, primary_key: false) do
       add :id, :bigint, null: false, default: 1, primary_key: true
       add :public_url, :text
-      add :mail_from_name, :text, default: "Ramshackle"
+      add :mail_from_name, :text, default: "Slapdash"
       add :mail_from_address, :text
 
       add :inserted_at, :utc_datetime_usec,

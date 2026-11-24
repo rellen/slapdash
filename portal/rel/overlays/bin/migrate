@@ -3,4 +3,4 @@
 set -euo pipefail
 
 cd -P -- "$(dirname -- "$0")"
-exec ./ramshackle eval Ramshackle.Release.migrate
+exec ./slapdash eval Slapdash.Release.migrate

@@ -1,5 +1,5 @@
 {
-  description = "Ramshackle: self-hosted software bots for code repositories and the applications running from them";
+  description = "Slapdash: self-hosted software bots for code repositories and the applications running from them";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -31,22 +31,22 @@
       packages =
         lib.recursiveUpdate
           (forSystems systems (pkgs: rec {
-            ramshackle = pkgs.callPackage ./portal/nix/package.nix {
+            slapdash = pkgs.callPackage ./portal/nix/package.nix {
               beamPackages = beamPackagesFor pkgs.beam_minimal;
             };
-            default = ramshackle;
+            default = slapdash;
           }))
           (
             forSystems linuxSystems (pkgs: {
               container = pkgs.callPackage ./portal/nix/container.nix {
-                ramshackle = self.packages.${pkgs.stdenv.hostPlatform.system}.ramshackle;
+                slapdash = self.packages.${pkgs.stdenv.hostPlatform.system}.slapdash;
               };
             })
           );
 
       nixosModules = rec {
-        ramshackle = import ./portal/nix/module.nix { inherit self; };
-        default = ramshackle;
+        slapdash = import ./portal/nix/module.nix { inherit self; };
+        default = slapdash;
       };
 
       devShells = forSystems systems (pkgs: rec {
@@ -57,7 +57,7 @@
       checks =
         lib.recursiveUpdate
           (forSystems systems (pkgs: {
-            inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) ramshackle;
+            inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) slapdash;
             formatting = pkgs.runCommand "check-nix-formatting" { nativeBuildInputs = [ pkgs.nixfmt ]; } ''
               cd ${self}
               nixfmt --check $(find . -name '*.nix')
