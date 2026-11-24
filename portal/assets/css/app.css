@@ -1,0 +1,25 @@
+/*
+  Ramshackle styles: layered, classless CSS with homegrown components.
+
+  The layer order below is the cascade order, lowest priority first. Each
+  file is imported into its own layer, so a later layer always wins over an
+  earlier one regardless of selector specificity.
+
+    reset       normalise browser defaults
+    tokens      custom properties: colour, type, space, radius, motion
+    base        classless styling of plain HTML elements
+    layout      page skeleton: body, landmarks, skip link
+    components  homegrown components, selected by data-* attributes
+    colocated   CSS from colocated <style> tags in HEEx templates
+
+  Do not add utility classes or a CSS framework. Style elements by what
+  they are, and components by their data-* attribute.
+*/
+@layer reset, tokens, base, layout, components, colocated;
+
+@import "./reset.css" layer(reset);
+@import "./tokens.css" layer(tokens);
+@import "./base.css" layer(base);
+@import "./layout.css" layer(layout);
+@import "./components.css" layer(components);
+@import "phoenix-colocated/ramshackle/colocated.css" layer(colocated);

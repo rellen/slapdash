@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Runs pending database migrations, then exits.
+set -euo pipefail
+
+cd -P -- "$(dirname -- "$0")"
+exec ./ramshackle eval Ramshackle.Release.migrate

@@ -1,0 +1,64 @@
+/* The page skeleton rendered by RamshackleWeb.Layouts.app/1. */
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* Skip link: the first focusable element, shown only when focused. */
+body > a[href="#main"] {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  translate: 0 -200%;
+}
+
+body > a[href="#main"]:focus {
+  translate: 0;
+}
+
+body > header {
+  border-block-end: var(--border-width) solid var(--color-border);
+  background: var(--color-surface-raised);
+}
+
+body > header > nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-inline-size: var(--page-width);
+  margin-inline: auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+body > header > nav > a:first-child {
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+body > main {
+  inline-size: 100%;
+  max-inline-size: var(--page-width);
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+/* Vertical rhythm between the top-level blocks of a page. */
+body > main > * + * {
+  margin-block-start: var(--space-4);
+}
+
+body > footer {
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Starts the release with the Phoenix endpoint serving HTTP.
+set -euo pipefail
+
+cd -P -- "$(dirname -- "$0")"
+PHX_SERVER=true exec ./ramshackle start

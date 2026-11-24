@@ -1,0 +1,235 @@
+/* Classless styling of plain HTML elements. No class selectors here. */
+
+html {
+  font-family: var(--font-body);
+  font-size: 100%;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+/* Text */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+  font-weight: 650;
+}
+
+h1 {
+  font-size: var(--text-2xl);
+}
+
+h2 {
+  font-size: var(--text-xl);
+}
+
+h3 {
+  font-size: var(--text-lg);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--text-base);
+}
+
+p,
+ul,
+ol,
+dl,
+pre,
+blockquote,
+table,
+form {
+  max-inline-size: var(--measure);
+}
+
+ul,
+ol {
+  padding-inline-start: var(--space-6);
+}
+
+small {
+  font-size: var(--text-sm);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+code {
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+}
+
+pre {
+  padding: var(--space-4);
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+
+pre code {
+  padding: 0;
+  background: none;
+}
+
+hr {
+  border: none;
+  border-block-start: var(--border-width) solid var(--color-border);
+}
+
+/* Links */
+
+a {
+  color: var(--color-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Focus: always visible for keyboard users. */
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Buttons. A link styled as a button carries data-button (see <.button>). */
+
+button,
+[data-button] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 550;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+button:hover,
+[data-button]:hover {
+  background: var(--color-surface-sunken);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+[data-variant="primary"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+[data-variant="primary"]:hover {
+  background: color-mix(in oklch, var(--color-accent), var(--color-text) 15%);
+}
+
+/* Form controls */
+
+label {
+  font-weight: 550;
+}
+
+input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="color"]),
+select,
+textarea {
+  display: block;
+  inline-size: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+}
+
+textarea {
+  min-block-size: 6lh;
+  resize: vertical;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  accent-color: var(--color-accent);
+}
+
+[aria-invalid="true"] {
+  border-color: var(--color-error);
+  border-width: 2px;
+}
+
+fieldset {
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+legend {
+  padding-inline: var(--space-2);
+  font-weight: 650;
+}
+
+/* Disable controls while LiveView submits the form they belong to. */
+.phx-submit-loading :is(button, input, select, textarea) {
+  cursor: wait;
+}
+
+/* Tables */
+
+table {
+  inline-size: 100%;
+  max-inline-size: none;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--border-width) solid var(--color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+th {
+  font-weight: 650;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--color-surface-sunken);
+}
+
+td[phx-click] {
+  cursor: pointer;
+}
+
+/* Description lists */
+
+dt {
+  font-weight: 650;
+}
+
+dd + dt {
+  margin-block-start: var(--space-3);
+}
