@@ -94,14 +94,39 @@ project. Each project keeps its Nix expressions in its own `nix/` directory
 - Write rules as project rules. Do not name people or "the owner" as the
   source of a rule. Write "Operators set up their own connections", not
   "The maintainer wants operators to set up their own connections".
+- Write commit messages in the Conventional Commits format. See
+  [Commits](#commits).
 
 ## Commits
 
-- Write the subject in the imperative mood, in 72 characters or fewer. Prefix
-  it with the project directory when the change is confined to one project:
-  `portal: add repository resource`.
+- Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  for the subject: `type(scope): subject`. Write the subject in ASD-STE100,
+  in the imperative mood and in lowercase, with no full stop.
+- Use one of these types:
+
+  | Type | Use it for |
+  |------|------------|
+  | `feat` | A new feature |
+  | `fix` | A bug fix |
+  | `docs` | Documentation only |
+  | `refactor` | A code change that does not add a feature or fix a bug |
+  | `perf` | A change that makes the code faster or use less memory |
+  | `test` | New or changed tests only |
+  | `build` | The build, Nix files or dependencies |
+  | `ci` | Continuous integration configuration |
+  | `chore` | Other work that does not change the shipped code |
+  | `revert` | A commit that reverts an earlier commit |
+
+- Use the project directory as the scope when the change is confined to one
+  project: `feat(portal): add repository resource`. Do not use a scope when
+  the change is in more than one project or at the repository root.
+- Keep the full first line to 72 characters or fewer.
+- Mark a breaking change with `!` after the type or scope
+  (`feat(portal)!: remove the legacy API`), and add a `BREAKING CHANGE:`
+  footer that tells what users must change.
 - In the body, explain why the change was made. The diff already shows what
   changed.
+- Do not rewrite commits that are on `main` to change their messages.
 - Never commit secrets, credentials or `.env` files. A deployment supplies a
   few bootstrap environment variables (see `portal/README.md`); everything else
   is configured in the app and stored encrypted in its database.
