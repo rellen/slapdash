@@ -48,11 +48,11 @@ defmodule Slapdash.Instance.Settings do
     end
 
     create :configure do
-      accept [:public_url, :mail_from_name, :mail_from_address]
+      accept [:public_url, :tenant_subdomains, :mail_from_name, :mail_from_address]
     end
 
     update :reconfigure do
-      accept [:public_url, :mail_from_name, :mail_from_address]
+      accept [:public_url, :tenant_subdomains, :mail_from_name, :mail_from_address]
       require_atomic? false
     end
   end
@@ -90,6 +90,13 @@ defmodule Slapdash.Instance.Settings do
 
     attribute :public_url, :string do
       description "Base URL people reach Slapdash at, such as https://bot.example.com"
+      public? true
+    end
+
+    attribute :tenant_subdomains, :boolean do
+      description "Whether each tenant is also served at <slug>.<public URL host>"
+      allow_nil? false
+      default false
       public? true
     end
 

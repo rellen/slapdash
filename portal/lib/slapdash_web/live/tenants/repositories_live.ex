@@ -110,7 +110,7 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
     ~H"""
     <Layouts.app flash={@flash} current_user={@current_user}>
       <h1>{@tenant.name}</h1>
-      <.tenant_nav tenant={@tenant} current={:repositories} />
+      <.tenant_nav tenant={@tenant} prefix={@tenant_prefix} current={:repositories} />
 
       <section aria-labelledby="repositories-heading">
         <h2 id="repositories-heading">Repositories</h2>
@@ -168,7 +168,7 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
           <:when test={@hosts == []}>
             <p>
               Add a connection that can host repositories first, on the <.link navigate={
-                ~p"/tenants/#{@tenant.slug}/connections"
+                tenant_path(@tenant_prefix, ~p"/connections")
               }>connections page</.link>.
             </p>
           </:when>

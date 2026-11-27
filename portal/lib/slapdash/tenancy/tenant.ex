@@ -70,6 +70,10 @@ defmodule Slapdash.Tenancy.Tenant do
         message "must start with a letter and use only lowercase letters, digits and underscores, up to 40 characters"
       end
 
+      # Tenant pages are at /<slug>/..., after the other routes, and a
+      # subdomain such as www has a meaning of its own.
+      validate {Slapdash.Tenancy.Validations.NotReserved, attribute: :slug}
+
       change fn changeset, _context ->
         case Ash.Changeset.get_attribute(changeset, :slug) do
           slug when is_binary(slug) ->

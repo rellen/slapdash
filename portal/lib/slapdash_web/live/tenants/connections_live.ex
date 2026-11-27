@@ -90,7 +90,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
   defp back_to_list(socket, message) do
     socket
     |> put_flash(:error, message)
-    |> push_patch(to: ~p"/tenants/#{socket.assigns.tenant.slug}/connections")
+    |> push_patch(to: tenant_path(socket.assigns.tenant_prefix, ~p"/connections"))
   end
 
   defp load_list(socket) do
@@ -137,11 +137,11 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
   # A new connection that takes webhooks opens its change page, which shows
   # the webhook URL to give to the service.
   defp after_save_path(socket, connection) do
-    slug = socket.assigns.tenant.slug
+    prefix = socket.assigns.tenant_prefix
 
     if is_nil(socket.assigns.connection) and webhooks?(socket.assigns.provider),
-      do: ~p"/tenants/#{slug}/connections/#{connection.id}",
-      else: ~p"/tenants/#{slug}/connections"
+      do: tenant_path(prefix, ~p"/connections/#{connection.id}"),
+      else: tenant_path(prefix, ~p"/connections")
   end
 
   defp find(socket, id) do
@@ -167,7 +167,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
     ~H"""
     <Layouts.app flash={@flash} current_user={@current_user}>
       <h1>{@tenant.name}</h1>
-      <.tenant_nav tenant={@tenant} current={:connections} />
+      <.tenant_nav tenant={@tenant} prefix={@tenant_prefix} current={:connections} />
 
       <.choose>
         <:when test={@form}>
@@ -175,16 +175,16 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
             form={@form}
             provider={@provider}
             connection={@connection}
-            tenant={@tenant}
+            prefix={@tenant_prefix}
           />
         </:when>
         <:otherwise>
-          <.connection_list connections={@connections} manage?={@manage?} tenant={@tenant} />
+          <.connection_list connections={@connections} manage?={@manage?} prefix={@tenant_prefix} />
           <section :if={@manage?} aria-labelledby="add-connection-heading">
             <h2 id="add-connection-heading">Add a connection</h2>
             <ul>
               <li :for={provider <- @providers}>
-                <.link patch={~p"/tenants/#{@tenant.slug}/connections/new/#{provider.key()}"}>
+                <.link patch={tenant_path(@tenant_prefix, ~p"/connections/new/#{provider.key()}")}>
                   Add a {provider.label()} connection
                 </.link>
               </li>
@@ -198,7 +198,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
 
   attr :connections, :list, required: true
   attr :manage?, :boolean, required: true
-  attr :tenant, :map, required: true
+  attr :prefix, :string, required: true
 
   defp connection_list(assigns) do
     ~H"""
@@ -218,7 +218,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
             <th scope="row">{connection.name}</th>
             <td>{provider_label(connection.provider)}</td>
             <td :if={@manage?}>
-              <.link patch={~p"/tenants/#{@tenant.slug}/connections/#{connection.id}"}>
+              <.link patch={tenant_path(@prefix, ~p"/connections/#{connection.id}")}>
                 Change <span>{connection.name}</span>
               </.link>
               <.button
@@ -240,7 +240,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
   attr :form, Phoenix.HTML.Form, required: true
   attr :provider, :atom, required: true
   attr :connection, :map, default: nil
-  attr :tenant, :map, required: true
+  attr :prefix, :string, required: true
 
   defp connection_form(assigns) do
     assigns =
@@ -299,7 +299,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
 
         <p>
           <.button variant="primary" phx-disable-with="Saving…">Save connection</.button>
-          <.link patch={~p"/tenants/#{@tenant.slug}/connections"}>Cancel</.link>
+          <.link patch={tenant_path(@prefix, ~p"/connections")}>Cancel</.link>
         </p>
       </.form>
     </section>

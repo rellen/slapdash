@@ -9,11 +9,16 @@ bots. For the reasons behind them, see
 All pages are for members of the tenant. Only root and the administrators
 of the tenant see the controls.
 
+Each page is at `/<slug>/<page>` on the public URL. When root turns on
+**Serve each tenant on its own subdomain** at `/admin`, each page is also
+at `/<page>` on `<slug>.<public URL host>`. For example, `/acme/runs` and
+`https://acme.slapdash.example.com/runs` are the same page.
+
 | Path | Content |
 | --- | --- |
-| `/tenants/:slug/connections` | The connections of the tenant, and forms to add, change and remove them |
-| `/tenants/:slug/repositories` | The repositories of the tenant, and the bots on each repository |
-| `/tenants/:slug/runs` | The latest 50 bot runs, newest first |
+| `/:slug/connections` | The connections of the tenant, and forms to add, change and remove them |
+| `/:slug/repositories` | The repositories of the tenant, and the bots on each repository |
+| `/:slug/runs` | The latest 50 bot runs, newest first |
 
 ## Webhook endpoint
 

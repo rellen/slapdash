@@ -58,7 +58,7 @@ defmodule SlapdashWeb.Admin.TenantsLive do
           <tbody>
             <tr :for={tenant <- @tenants} id={"tenant-#{tenant.id}"}>
               <th scope="row">
-                <.link navigate={~p"/tenants/#{tenant.slug}/members"}>{tenant.name}</.link>
+                <.link navigate={~p"/#{tenant.slug}/members"}>{tenant.name}</.link>
               </th>
               <td>{tenant.slug}</td>
               <td><code>{tenant.schema}</code></td>

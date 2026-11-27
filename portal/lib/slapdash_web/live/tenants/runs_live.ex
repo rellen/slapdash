@@ -43,7 +43,7 @@ defmodule SlapdashWeb.Tenants.RunsLive do
     ~H"""
     <Layouts.app flash={@flash} current_user={@current_user}>
       <h1>{@tenant.name}</h1>
-      <.tenant_nav tenant={@tenant} current={:runs} />
+      <.tenant_nav tenant={@tenant} prefix={@tenant_prefix} current={:runs} />
 
       <section aria-labelledby="runs-heading">
         <h2 id="runs-heading">Bot runs</h2>

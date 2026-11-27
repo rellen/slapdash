@@ -13,8 +13,8 @@ Slapdash keeps environment variables to what it needs before it can reach
 its database. Everything else lives in the database as Ash resources and is
 set up by root in the admin pages at `/admin`:
 
-- **Settings**: the public URL people reach Slapdash at, and the sender of
-  outgoing mail.
+- **Settings**: the public URL people reach Slapdash at, the sender of
+  outgoing mail, and whether each tenant also gets its own subdomain.
 - **Mail**: an SMTP server, Postmark, Mailgun or SendGrid. Until one is set
   up, Slapdash cannot email sign-in links (development falls back to the
   mailbox preview at <http://localhost:4000/dev/mailbox>).
@@ -51,12 +51,17 @@ Development and test need none of these; `config/dev.exs` and
 
 Tenant administrators set up the rest in the tenant pages:
 
-- **Connections** (`/tenants/:slug/connections`): links to outside
+(Each tenant page is at `/<slug>/...`. Root can also serve each tenant at
+`<slug>.<public URL host>` from `/admin`, with a wildcard DNS record and a
+wildcard TLS certificate. One sign-in then covers all tenant subdomains.)
+
+
+- **Connections** (`/:slug/connections`): links to outside
   services. The first kind is a GitHub App. Each connection that takes
   webhooks has its own URL, `/webhooks/<connection id>`.
-- **Repositories** (`/tenants/:slug/repositories`): the repositories that
+- **Repositories** (`/:slug/repositories`): the repositories that
   the tenant's bots work on, and the bots on each repository.
-- **Bot runs** (`/tenants/:slug/runs`): what each bot did, and why a run
+- **Bot runs** (`/:slug/runs`): what each bot did, and why a run
   failed.
 
 Bots run inside the portal as Oban jobs. Documentation:
@@ -130,7 +135,7 @@ There are three roles:
   its members.
 - **Engineer** is per tenant: works in the tenant and sees its members.
 
-Members are managed at `/tenants/<slug>/members`. Adding someone by email is
+Members are managed at `/<slug>/members`. Adding someone by email is
 how they are invited: it creates their account if needed, and they can then
 sign in with that address.
 

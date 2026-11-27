@@ -16,11 +16,11 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
   end
 
   test "an administrator adds a connection from the provider's fields", ctx do
-    {:ok, view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/tenants/acme/connections")
+    {:ok, view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/acme/connections")
     assert html =~ "This tenant has no connections yet."
 
     view |> element("a", "Add a Fake service connection") |> render_click()
-    assert_patch(view, ~p"/tenants/acme/connections/new/fake")
+    assert_patch(view, ~p"/acme/connections/new/fake")
     html = render(view)
     assert html =~ "Make a token in the fake service."
     assert html =~ "Note (optional)"
@@ -42,7 +42,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
     |> render_submit()
 
     [connection] = Connections.list_connections!(authorize?: false)
-    assert_patch(view, ~p"/tenants/acme/connections/#{connection.id}")
+    assert_patch(view, ~p"/acme/connections/#{connection.id}")
     html = render(view)
     assert html =~ "Saved Fake."
     assert html =~ "/webhooks/#{connection.id}</code>"
@@ -56,7 +56,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
     connection = connection(ctx.acme, %{secrets: %{"token" => "very-secret"}})
 
     {:ok, view, _html} =
-      ctx.conn |> log_in(ctx.admin) |> live(~p"/tenants/acme/connections/#{connection.id}")
+      ctx.conn |> log_in(ctx.admin) |> live(~p"/acme/connections/#{connection.id}")
 
     html = render(view)
     assert html =~ "Leave a secret blank to keep the stored one."
@@ -76,7 +76,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
     connection(ctx.acme, %{name: "Shared service"})
 
     {:ok, _view, html} =
-      ctx.conn |> log_in(ctx.engineer) |> live(~p"/tenants/acme/connections")
+      ctx.conn |> log_in(ctx.engineer) |> live(~p"/acme/connections")
 
     assert html =~ "Shared service"
     refute html =~ "Add a connection"
@@ -85,7 +85,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
 
   test "an engineer cannot open the add form", ctx do
     assert {:error, {:live_redirect, %{flash: %{"error" => message}}}} =
-             ctx.conn |> log_in(ctx.engineer) |> live(~p"/tenants/acme/connections/new/fake")
+             ctx.conn |> log_in(ctx.engineer) |> live(~p"/acme/connections/new/fake")
 
     assert message == "You cannot add that kind of connection."
   end
@@ -94,6 +94,6 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
     outsider = user()
 
     assert {:error, {:live_redirect, %{to: "/"}}} =
-             ctx.conn |> log_in(outsider) |> live(~p"/tenants/acme/connections")
+             ctx.conn |> log_in(outsider) |> live(~p"/acme/connections")
   end
 end

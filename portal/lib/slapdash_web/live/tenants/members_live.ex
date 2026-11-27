@@ -99,7 +99,7 @@ defmodule SlapdashWeb.Tenants.MembersLive do
     ~H"""
     <Layouts.app flash={@flash} current_user={@current_user}>
       <h1>{@tenant.name}</h1>
-      <.tenant_nav tenant={@tenant} current={:members} />
+      <.tenant_nav tenant={@tenant} prefix={@tenant_prefix} current={:members} />
 
       <section aria-labelledby="members-heading">
         <h2 id="members-heading">Members</h2>

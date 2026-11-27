@@ -151,6 +151,12 @@ later move is mostly mechanical. Do not add ash_grant itself.
   record as `tenant:`; `Ash.ToTenant` turns it into the schema.
 - Install-wide data (users, instance settings, the tenant list, memberships)
   lives in the `public` schema.
+- Tenant pages are at `/<slug>/<page>`, and at `/<page>` on the tenant
+  subdomain when root turns subdomains on. `SlapdashWeb.TenantScope` loads
+  `@tenant` and `@tenant_prefix`. Build links between tenant pages with
+  `tenant_path(@tenant_prefix, ~p"/<page>")`. The tenant routes come last in
+  the router; add the first part of each new top-level route to
+  `Slapdash.Tenancy.Validations.NotReserved` (a test checks this).
 - Tenant data that an incoming request must find before it knows the tenant
   (connections and repositories) also lives in the `public` schema, with a
   `tenant_id` and `authz tenant_attribute`.

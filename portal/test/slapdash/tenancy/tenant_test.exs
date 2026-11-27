@@ -36,6 +36,23 @@ defmodule Slapdash.Tenancy.TenantTest do
     end
   end
 
+  test "a slug that names a route or a common subdomain is refused" do
+    for slug <- ["admin", "webhooks", "www", "members"] do
+      assert {:error, error} = Slapdash.Tenancy.create_tenant("Bad", slug, authorize?: false)
+      assert Exception.message(error) =~ "is reserved for Slapdash itself"
+    end
+  end
+
+  test "the first part of each route that could be a slug is reserved" do
+    reserved = Slapdash.Tenancy.Validations.NotReserved.reserved()
+
+    for %{path: path} <- Phoenix.Router.routes(SlapdashWeb.Router),
+        [first | _] = String.split(path, "/", trim: true) ++ [""],
+        first =~ ~r/\A[a-z][a-z0-9_]{0,39}\z/ do
+      assert first in reserved, "#{first} (from #{path}) is not reserved"
+    end
+  end
+
   test "the slug is unique" do
     tenant("acme")
 

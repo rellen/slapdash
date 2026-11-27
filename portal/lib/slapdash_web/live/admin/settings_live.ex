@@ -65,6 +65,15 @@ defmodule SlapdashWeb.Admin.SettingsLive do
           <p>
             The address people use to reach Slapdash. Sign-in links and GitHub sign-in are built from it.
           </p>
+          <.input
+            field={@form[:tenant_subdomains]}
+            type="checkbox"
+            label="Serve each tenant on its own subdomain"
+          />
+          <p>
+            Tenant acme is then also at acme.&lt;public URL host&gt;. This needs a wildcard DNS record and a
+            wildcard TLS certificate. Tenants stay at /acme on the public URL too.
+          </p>
           <.input field={@form[:mail_from_name]} label="Mail sender name" />
           <.input
             field={@form[:mail_from_address]}

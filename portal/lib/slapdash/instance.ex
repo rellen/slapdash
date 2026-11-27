@@ -66,6 +66,56 @@ defmodule Slapdash.Instance do
     match?({:ok, %{public_url: url}} when is_binary(url), get_settings(authorize?: false))
   end
 
+  @doc """
+  The host that tenant subdomains sit under, or `nil` when root has not
+  set the public URL or has not turned tenant subdomains on. With the public
+  URL `https://slapdash.example.com`, tenant `acme` is at
+  `acme.slapdash.example.com`.
+  """
+  @spec tenant_parent_host() :: String.t() | nil
+  def tenant_parent_host do
+    case get_settings(authorize?: false, not_found_error?: false) do
+      {:ok, %{public_url: url, tenant_subdomains: true}} when is_binary(url) ->
+        URI.parse(url).host
+
+      _ ->
+        nil
+    end
+  end
+
+  @doc "The tenant slug that a request host names, or `nil`."
+  @spec tenant_slug_for_host(String.t() | nil) :: String.t() | nil
+  def tenant_slug_for_host(host) when is_binary(host) do
+    host = String.downcase(host)
+
+    with parent when is_binary(parent) <- tenant_parent_host(),
+         suffix = "." <> parent,
+         true <- String.ends_with?(host, suffix),
+         slug = String.replace_suffix(host, suffix, ""),
+         true <- slug != "" and not String.contains?(slug, ".") do
+      slug
+    else
+      _ -> nil
+    end
+  end
+
+  def tenant_slug_for_host(_host), do: nil
+
+  @doc """
+  The absolute URL of a page of a tenant, such as `tenant_url("acme",
+  "/members")`. It is on the tenant subdomain when they are on, and under
+  `/<slug>` on the public URL otherwise.
+  """
+  @spec tenant_url(String.t(), String.t()) :: String.t()
+  def tenant_url(slug, "/" <> _ = path) do
+    if tenant_parent_host() do
+      uri = URI.parse(public_url())
+      URI.to_string(%{uri | host: slug <> "." <> uri.host, path: path})
+    else
+      public_url() <> "/" <> slug <> path
+    end
+  end
+
   @doc "Builds an absolute URL for a path, such as `~p\"/sign-in\"`."
   @spec url(String.t()) :: String.t()
   def url("/" <> _ = path), do: public_url() <> path

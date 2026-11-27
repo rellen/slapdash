@@ -11,11 +11,11 @@ defmodule SlapdashWeb.Tenants.RunsLiveTest do
     repository = repository(connection(acme))
     enrollment(repository)
 
-    {:ok, _view, html} = conn |> log_in(engineer) |> live(~p"/tenants/acme/runs")
+    {:ok, _view, html} = conn |> log_in(engineer) |> live(~p"/acme/runs")
     assert html =~ "No bot has run yet."
 
     {:ok, [run]} = Slapdash.Bots.dispatch(pull_request_opened(repository), repository)
-    {:ok, _view, html} = conn |> log_in(engineer) |> live(~p"/tenants/acme/runs")
+    {:ok, _view, html} = conn |> log_in(engineer) |> live(~p"/acme/runs")
 
     assert html =~ "run-#{run.id}"
     assert html =~ "Echo"

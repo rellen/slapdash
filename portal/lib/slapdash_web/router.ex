@@ -34,19 +34,6 @@ defmodule SlapdashWeb.Router do
       live "/admin/github", Admin.GitHubLive
       live "/admin/tenants", Admin.TenantsLive
     end
-
-    ash_authentication_live_session :tenant,
-      on_mount: [
-        {SlapdashWeb.LiveUserAuth, :live_user_required},
-        SlapdashWeb.TenantScope
-      ] do
-      live "/tenants/:slug/members", Tenants.MembersLive
-      live "/tenants/:slug/connections", Tenants.ConnectionsLive, :index
-      live "/tenants/:slug/connections/new/:provider", Tenants.ConnectionsLive, :new
-      live "/tenants/:slug/connections/:id", Tenants.ConnectionsLive, :edit
-      live "/tenants/:slug/repositories", Tenants.RepositoriesLive
-      live "/tenants/:slug/runs", Tenants.RunsLive
-    end
   end
 
   scope "/", SlapdashWeb do
@@ -89,6 +76,34 @@ defmodule SlapdashWeb.Router do
 
       live_dashboard "/dashboard", metrics: SlapdashWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+
+  # Tenant pages. They come last, because `/:slug/...` matches many paths.
+  # Slapdash.Tenancy.Tenant reserves slugs that clash with the routes above.
+  # The first group is for tenant subdomains, and the second group works on
+  # any host. See SlapdashWeb.TenantScope.
+  scope "/", SlapdashWeb do
+    pipe_through :browser
+
+    ash_authentication_live_session :tenant,
+      on_mount: [
+        {SlapdashWeb.LiveUserAuth, :live_user_required},
+        SlapdashWeb.TenantScope
+      ] do
+      live "/members", Tenants.MembersLive
+      live "/connections", Tenants.ConnectionsLive, :index
+      live "/connections/new/:provider", Tenants.ConnectionsLive, :new
+      live "/connections/:id", Tenants.ConnectionsLive, :edit
+      live "/repositories", Tenants.RepositoriesLive
+      live "/runs", Tenants.RunsLive
+
+      live "/:slug/members", Tenants.MembersLive
+      live "/:slug/connections", Tenants.ConnectionsLive, :index
+      live "/:slug/connections/new/:provider", Tenants.ConnectionsLive, :new
+      live "/:slug/connections/:id", Tenants.ConnectionsLive, :edit
+      live "/:slug/repositories", Tenants.RepositoriesLive
+      live "/:slug/runs", Tenants.RunsLive
     end
   end
 end

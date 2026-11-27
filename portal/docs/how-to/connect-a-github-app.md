@@ -35,7 +35,7 @@ The examples use the tenant `acme` and the repository `octo-org/hello`.
 
 ## 2. Add the connection in Slapdash
 
-1. Open `/tenants/acme/connections` and click
+1. Open `/acme/connections` and click
    **Add a GitHub App connection**.
 2. Fill in the form:
    - **Name**: a name for people, for example `GitHub`.
@@ -67,7 +67,7 @@ The examples use the tenant `acme` and the repository `octo-org/hello`.
 
 ## 5. Add the repository and turn on the bot
 
-1. Open `/tenants/acme/repositories`.
+1. Open `/acme/repositories`.
 2. Select the connection, type `octo-org/hello` as the path, and click
    **Add repository**. A GitHub URL of the repository also works.
 3. In the row of the repository, click **Turn on Greeter**.
@@ -77,7 +77,7 @@ The examples use the tenant `acme` and the repository `octo-org/hello`.
 1. Open a pull request on `octo-org/hello`.
 2. After a few seconds, the app puts the Greeter comment on the pull
    request.
-3. Open `/tenants/acme/runs`. The run has the status **Succeeded**.
+3. Open `/acme/runs`. The run has the status **Succeeded**.
 
 If no comment comes:
 
@@ -85,7 +85,7 @@ If no comment comes:
   Deliveries**. An answer of `401` means that the webhook secret in
   Slapdash is not the same as in GitHub. An answer of `404` means that the
   webhook URL is not correct.
-- On `/tenants/acme/runs`, a failed run shows the error from GitHub. The
+- On `/acme/runs`, a failed run shows the error from GitHub. The
   error `GitHub answered 404 for GET /repos/octo-org/hello/installation`
   means that the app is not installed on the repository.
 

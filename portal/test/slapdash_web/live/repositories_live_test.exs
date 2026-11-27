@@ -12,13 +12,13 @@ defmodule SlapdashWeb.Tenants.RepositoriesLiveTest do
   end
 
   test "the page asks for a connection first", ctx do
-    {:ok, _view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/tenants/acme/repositories")
+    {:ok, _view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/acme/repositories")
     assert html =~ "Add a connection that can host repositories first"
   end
 
   test "an administrator adds and removes a repository", ctx do
     connection = connection(ctx.acme, %{name: "Fake host"})
-    {:ok, view, _html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/tenants/acme/repositories")
+    {:ok, view, _html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/acme/repositories")
 
     html =
       view
@@ -43,7 +43,7 @@ defmodule SlapdashWeb.Tenants.RepositoriesLiveTest do
 
   test "an administrator turns a bot on and off for a repository", ctx do
     repository = repository(connection(ctx.acme))
-    {:ok, view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/tenants/acme/repositories")
+    {:ok, view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/acme/repositories")
     assert html =~ "Echo: off"
 
     view |> element("button", "Turn on Echo for acme/widgets") |> render_click()

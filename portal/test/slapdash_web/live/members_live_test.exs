@@ -20,7 +20,7 @@ defmodule SlapdashWeb.Tenants.MembersLiveTest do
     admin: admin,
     engineer: engineer
   } do
-    {:ok, view, html} = conn |> log_in(admin) |> live(~p"/tenants/acme/members")
+    {:ok, view, html} = conn |> log_in(admin) |> live(~p"/acme/members")
     assert html =~ "engineer@example.com"
 
     view
@@ -47,7 +47,7 @@ defmodule SlapdashWeb.Tenants.MembersLiveTest do
   end
 
   test "an engineer sees the members but no controls", %{conn: conn, engineer: engineer} do
-    {:ok, _view, html} = conn |> log_in(engineer) |> live(~p"/tenants/acme/members")
+    {:ok, _view, html} = conn |> log_in(engineer) |> live(~p"/acme/members")
 
     assert html =~ "admin@example.com"
     refute html =~ "Add a member"
@@ -59,6 +59,6 @@ defmodule SlapdashWeb.Tenants.MembersLiveTest do
     outsider = user()
 
     assert {:error, {:live_redirect, %{to: "/"}}} =
-             conn |> log_in(outsider) |> live(~p"/tenants/acme/members")
+             conn |> log_in(outsider) |> live(~p"/acme/members")
   end
 end
