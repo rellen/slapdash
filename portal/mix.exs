@@ -1,10 +1,13 @@
 defmodule Slapdash.MixProject do
   use Mix.Project
 
+  # `mix git_ops.release` updates @version. Do not change it by hand.
+  @version "0.1.0"
+
   def project do
     [
       app: :slapdash,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -78,6 +81,7 @@ defmodule Slapdash.MixProject do
       {:ash, "~> 3.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:usage_rules, "~> 1.3", only: [:dev]},
+      {:git_ops, "~> 2.12", only: [:dev], runtime: false},
       {:phoenix, "~> 1.8.17"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},

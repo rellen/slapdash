@@ -85,3 +85,19 @@ config :slapdash, Slapdash.Mailer, adapter: Swoosh.Adapters.Local
 # them in the database, encrypted with SLAPDASH_MASTER_KEY.
 config :slapdash, boot_secrets: :config
 config :slapdash, Slapdash.Vault, key: "GGusNfdbOdAKuDxKPqRGbJxS3Ec+W61IC1bfm7OzaTo="
+
+# git_ops makes the changelog and the version from Conventional Commits. Run
+# `mix git_ops.release` in portal/. It writes CHANGELOG.md, sets @version in
+# mix.exs, commits and makes a local tag. It does not push and does not
+# publish to Hex. The tag prefix includes the project name because the
+# repository holds more than one project.
+config :git_ops,
+  mix_project: Mix.Project.get!(),
+  # git_ops runs `git init` in this directory, so it must be the repository root.
+  repository_path: Path.expand("../..", __DIR__),
+  changelog_file: "CHANGELOG.md",
+  repository_url: "https://github.com/rellen/slapdash",
+  github_handle_lookup?: false,
+  manage_mix_version?: true,
+  manage_readme_version: false,
+  version_tag_prefix: "portal-v"

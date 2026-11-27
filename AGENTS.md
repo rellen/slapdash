@@ -130,6 +130,12 @@ project. Each project keeps its Nix expressions in its own `nix/` directory
 - In the body, explain why the change was made. The diff already shows what
   changed.
 - Do not rewrite commits that are on `main` to change their messages.
+- `portal/` uses [git_ops](https://hexdocs.pm/git_ops) to make its changelog and
+  version from the commit messages. Run `mix git_ops.release` in `portal/`. It
+  updates `portal/CHANGELOG.md` and `@version` in `portal/mix.exs`, commits,
+  and makes a local `portal-vX.Y.Z` tag. The project is not published to Hex.
+  Push the release commit and its tag with `git push --follow-tags`.
+  The first release uses `mix git_ops.release --initial`.
 - Never commit secrets, credentials or `.env` files. A deployment supplies a
   few bootstrap environment variables (see `portal/README.md`); everything else
   is configured in the app and stored encrypted in its database.

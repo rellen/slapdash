@@ -14,7 +14,7 @@ let
 
   # Read the version from mix.exs so it cannot drift from the Mix project.
   version = builtins.head (
-    builtins.match ''.*[[:space:]]version: "([^"]+)".*'' (builtins.readFile (root + "/mix.exs"))
+    builtins.match ''.*[[:space:]]@version "([^"]+)".*'' (builtins.readFile (root + "/mix.exs"))
   );
 
   # Only the files a release build reads. Tests, build output and editor
