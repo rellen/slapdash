@@ -38,6 +38,17 @@
       "sudo -u postgres psql -d slapdash -tAc 'SELECT count(*) FROM instance_boot_secrets' | grep -q '^1$'"
     )
 
+    # Oban has its tables, and the webhook endpoint answers without a session.
+    machine.succeed(
+      "sudo -u postgres psql -d slapdash -tAc 'SELECT count(*) FROM oban_jobs' | grep -q '^0$'"
+    )
+    status = machine.succeed(
+      "curl --silent --output /dev/null --write-out '%{http_code}' -X POST "
+      "-H 'content-type: application/json' --data '{}' "
+      "http://localhost:4000/webhooks/00000000-0000-0000-0000-000000000000"
+    )
+    assert status == "404", status
+
     # Distribution listens on loopback only, and rpc reaches the server.
     machine.succeed("ss -ltnH '( sport = :4369 )' | grep -q '127.0.0.1:4369'")
     machine.fail("ss -ltnpH | grep -E 'beam|epmd' | grep -v -E '127\\.0\\.0\\.1:|\\[::1\\]:|:4000 '")
