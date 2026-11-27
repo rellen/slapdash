@@ -8,7 +8,8 @@ defmodule Slapdash.Tenancy do
   can list a user's tenants without visiting every schema.
   """
   use Ash.Domain,
-    otp_app: :slapdash
+    otp_app: :slapdash,
+    extensions: [AshPaperTrail.Domain]
 
   resources do
     resource Slapdash.Tenancy.Tenant do
@@ -24,5 +25,9 @@ defmodule Slapdash.Tenancy do
       define :remove_member, action: :remove
       define :list_memberships, action: :read
     end
+  end
+
+  paper_trail do
+    include_versions? true
   end
 end

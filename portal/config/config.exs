@@ -40,6 +40,7 @@ config :spark,
         :token,
         :user_identity,
         :postgres,
+        :paper_trail,
         :resource,
         :code_interface,
         :actions,
@@ -56,7 +57,9 @@ config :spark,
         :identities
       ]
     ],
-    "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]]
+    "Ash.Domain": [
+      section_order: [:resources, :paper_trail, :policies, :authorization, :domain, :execution]
+    ]
   ]
 
 config :slapdash,

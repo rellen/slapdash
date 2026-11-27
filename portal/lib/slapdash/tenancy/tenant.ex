@@ -17,7 +17,7 @@ defmodule Slapdash.Tenancy.Tenant do
     domain: Slapdash.Tenancy,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [Slapdash.Authz.Resource]
+    extensions: [Slapdash.Authz.Resource, AshPaperTrail.Resource]
 
   defimpl Ash.ToTenant do
     def to_tenant(%{schema: schema, id: id}, resource) do
@@ -42,6 +42,22 @@ defmodule Slapdash.Tenancy.Tenant do
       create? true
       update? false
     end
+  end
+
+  paper_trail do
+    mixin {Slapdash.Versions, :mixin, ["tenant_version"]}
+
+    version_extensions authorizers: [Ash.Policy.Authorizer],
+                       extensions: [Slapdash.Authz.Resource]
+
+    belongs_to_actor :actor, Slapdash.Accounts.User,
+      domain: Slapdash.Accounts,
+      on_delete: :nilify
+
+    store_action_name? true
+    reference_source? false
+    sensitive_attributes :ignore
+    ignore_attributes [:inserted_at, :updated_at]
   end
 
   actions do

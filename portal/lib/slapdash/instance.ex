@@ -8,7 +8,8 @@ defmodule Slapdash.Instance do
   `Slapdash.Authz` for who may do what.
   """
   use Ash.Domain,
-    otp_app: :slapdash
+    otp_app: :slapdash,
+    extensions: [AshPaperTrail.Domain]
 
   resources do
     resource Slapdash.Instance.BootSecrets
@@ -32,6 +33,10 @@ defmodule Slapdash.Instance do
       define :reconfigure_github_oauth_app, action: :reconfigure
       define :remove_github_oauth_app, action: :remove
     end
+  end
+
+  paper_trail do
+    include_versions? true
   end
 
   @doc """

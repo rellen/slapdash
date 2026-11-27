@@ -13,7 +13,7 @@ defmodule Slapdash.Tenancy.Membership do
     domain: Slapdash.Tenancy,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [Slapdash.Authz.Resource]
+    extensions: [Slapdash.Authz.Resource, AshPaperTrail.Resource]
 
   authz do
     tenant_attribute(:tenant_id)
@@ -33,6 +33,22 @@ defmodule Slapdash.Tenancy.Membership do
       # Resolving a user's grants looks up their memberships by user.
       index [:user_id]
     end
+  end
+
+  paper_trail do
+    mixin {Slapdash.Versions, :mixin, ["membership_version"]}
+
+    version_extensions authorizers: [Ash.Policy.Authorizer],
+                       extensions: [Slapdash.Authz.Resource]
+
+    belongs_to_actor :actor, Slapdash.Accounts.User,
+      domain: Slapdash.Accounts,
+      on_delete: :nilify
+
+    store_action_name? true
+    reference_source? false
+    sensitive_attributes :ignore
+    ignore_attributes [:inserted_at, :updated_at]
   end
 
   actions do

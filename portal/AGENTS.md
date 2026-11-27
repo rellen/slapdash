@@ -148,6 +148,24 @@ later move is mostly mechanical. Do not add ash_grant itself.
   `Slapdash.Release.migrate/0` (and so `bin/migrate`) runs them in every
   tenant schema after the public migrations.
 
+## Version history
+
+- Users, tenants, memberships and the `Slapdash.Instance` resources keep a
+  version history with AshPaperTrail. Each create, update and destroy
+  writes a snapshot, the action name and the actor to `<table>_versions`.
+  `Slapdash.Versions` has the `paper_trail` block to copy into a new
+  resource. Its domain needs `AshPaperTrail.Domain` with
+  `include_versions? true`.
+- Give the actor to every action, also with `authorize?: false`, so that
+  the version records who did it.
+- Keep secrets out of versions: use `sensitive_attributes :ignore` and put
+  the AshCloak `encrypted_<name>` attributes in `ignore_attributes`. Never
+  turn on `store_action_inputs?` on a resource that takes a secret.
+- Versions of a `multitenancy strategy :context` resource stay in the
+  tenant's schema, and their migrations go to `priv/repo/tenant_migrations/`.
+- Only root reads versions of public-schema resources. Nothing writes
+  versions except AshPaperTrail.
+
 ## Security
 
 Slapdash holds credentials (deploy keys, API tokens) and runs commands

@@ -13,7 +13,7 @@ defmodule Slapdash.Instance.MailProvider do
     domain: Slapdash.Instance,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshCloak, Slapdash.Authz.Resource]
+    extensions: [AshCloak, Slapdash.Authz.Resource, AshPaperTrail.Resource]
 
   @fields [:adapter, :host, :port, :username, :security, :domain, :region, :secret]
 
@@ -34,6 +34,22 @@ defmodule Slapdash.Instance.MailProvider do
     check_constraints do
       check_constraint :id, "mail_provider_singleton", check: "id = 1"
     end
+  end
+
+  paper_trail do
+    mixin {Slapdash.Versions, :mixin, ["mail_provider_version"]}
+
+    version_extensions authorizers: [Ash.Policy.Authorizer],
+                       extensions: [Slapdash.Authz.Resource]
+
+    belongs_to_actor :actor, Slapdash.Accounts.User,
+      domain: Slapdash.Accounts,
+      on_delete: :nilify
+
+    store_action_name? true
+    reference_source? false
+    sensitive_attributes :ignore
+    ignore_attributes [:encrypted_secret, :inserted_at, :updated_at]
   end
 
   actions do

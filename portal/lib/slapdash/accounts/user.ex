@@ -4,7 +4,7 @@ defmodule Slapdash.Accounts.User do
     domain: Slapdash.Accounts,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshAuthentication, Slapdash.Authz.Resource]
+    extensions: [AshAuthentication, Slapdash.Authz.Resource, AshPaperTrail.Resource]
 
   authentication do
     add_ons do
@@ -60,6 +60,21 @@ defmodule Slapdash.Accounts.User do
   postgres do
     table "users"
     repo Slapdash.Repo
+  end
+
+  paper_trail do
+    mixin {Slapdash.Versions, :mixin, ["user_version"]}
+
+    version_extensions authorizers: [Ash.Policy.Authorizer],
+                       extensions: [Slapdash.Authz.Resource]
+
+    belongs_to_actor :actor, Slapdash.Accounts.User,
+      domain: Slapdash.Accounts,
+      on_delete: :nilify
+
+    store_action_name? true
+    reference_source? false
+    sensitive_attributes :ignore
   end
 
   actions do

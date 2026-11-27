@@ -70,6 +70,7 @@ defmodule Slapdash.MixProject do
       {:ash_authentication_phoenix, "~> 2.0"},
       {:ash_authentication, "~> 4.0"},
       {:ash_cloak, "~> 0.5"},
+      {:ash_paper_trail, "~> 0.8"},
       {:cloak, "~> 1.1"},
       {:gen_smtp, "~> 1.3"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
