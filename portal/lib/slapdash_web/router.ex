@@ -35,9 +35,15 @@ defmodule SlapdashWeb.Router do
       live "/admin/tenants", Admin.TenantsLive
     end
 
-    ash_authentication_live_session :signed_in,
-      on_mount: {SlapdashWeb.LiveUserAuth, :live_user_required} do
+    ash_authentication_live_session :tenant,
+      on_mount: [
+        {SlapdashWeb.LiveUserAuth, :live_user_required},
+        SlapdashWeb.TenantScope
+      ] do
       live "/tenants/:slug/members", Tenants.MembersLive
+      live "/tenants/:slug/connections", Tenants.ConnectionsLive, :index
+      live "/tenants/:slug/connections/new/:provider", Tenants.ConnectionsLive, :new
+      live "/tenants/:slug/connections/:id", Tenants.ConnectionsLive, :edit
     end
   end
 

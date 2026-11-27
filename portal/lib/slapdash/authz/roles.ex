@@ -22,7 +22,8 @@ defmodule Slapdash.Authz.Roles do
     administrator: ["*:*:*:always"],
     engineer: [
       "tenant:*:read:always",
-      "membership:*:read:always"
+      "membership:*:read:always",
+      "connection:*:read:always"
     ],
     signed_in: [
       "user:*:read:own",

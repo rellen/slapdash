@@ -13,6 +13,7 @@ defmodule Slapdash do
     deps: [
       Slapdash.Accounts,
       Slapdash.Authz,
+      Slapdash.Connections,
       Slapdash.Instance,
       Slapdash.Mailer,
       Slapdash.Secrets,

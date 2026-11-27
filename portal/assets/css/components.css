@@ -156,7 +156,8 @@
 
 /* <.admin_nav> in admin_components.ex */
 
-[data-admin-nav] {
+[data-admin-nav],
+[data-tenant-nav] {
   margin-block-end: var(--space-6);
   border-block-end: var(--border-width) solid var(--color-border);
 

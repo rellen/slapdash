@@ -57,8 +57,10 @@ defmodule Slapdash.Authz.Check do
 
   defp record_matches?(_filter, _actor, _resource, _subject), do: false
 
+  # An invalid create never reaches the database, so its attributes can still
+  # decide authorization. This lets `can_*?` checks pass partial input.
   defp record(%Ash.Changeset{action_type: :create} = changeset),
-    do: Ash.Changeset.apply_attributes(changeset)
+    do: Ash.Changeset.apply_attributes(changeset, force?: true)
 
   defp record(%Ash.Changeset{data: %{__meta__: %{state: :loaded}} = data}), do: {:ok, data}
   defp record(_changeset), do: :error

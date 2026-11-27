@@ -24,6 +24,22 @@ defmodule Slapdash.Fixtures do
     Tenancy.add_member!(tenant.id, to_string(user.email), role, authorize?: false)
   end
 
+  def connection(tenant, attrs \\ %{}) do
+    Slapdash.Connections.add_connection!(
+      Map.merge(
+        %{
+          tenant_id: tenant.id,
+          name: "Fake #{System.unique_integer([:positive])}",
+          provider: "fake",
+          config: %{"account" => "7"},
+          secrets: %{"token" => "t0ken"}
+        },
+        attrs
+      ),
+      authorize?: false
+    )
+  end
+
   def unique_email, do: "user#{System.unique_integer([:positive])}@example.com"
   def unique_slug, do: "t#{System.unique_integer([:positive])}"
 end

@@ -8,35 +8,26 @@ defmodule SlapdashWeb.Tenants.MembersLive do
   use SlapdashWeb, :live_view
 
   import SlapdashWeb.AdminComponents, only: [error_message: 1]
+  import SlapdashWeb.TenantComponents
 
   alias Slapdash.Authz.Roles
   alias Slapdash.Tenancy
 
   @impl true
-  def mount(%{"slug" => slug}, _session, socket) do
-    actor = socket.assigns.current_user
+  def mount(_params, _session, socket) do
+    %{current_user: actor, tenant: tenant} = socket.assigns
 
-    case Tenancy.get_tenant_by_slug(slug, actor: actor, not_found_error?: false) do
-      {:ok, %Tenancy.Tenant{} = tenant} ->
-        {:ok,
-         socket
-         |> assign(
-           tenant: tenant,
-           page_title: "#{tenant.name} members",
-           roles: Enum.map(Roles.tenant_roles(), &{Roles.describe(&1), Atom.to_string(&1)}),
-           manage?:
-             Tenancy.can_add_member?(actor, tenant.id, "someone@example.com", :engineer,
-               reuse_values?: true
-             )
+    {:ok,
+     socket
+     |> assign(
+       page_title: "#{tenant.name} members",
+       roles: Enum.map(Roles.tenant_roles(), &{Roles.describe(&1), Atom.to_string(&1)}),
+       manage?:
+         Tenancy.can_add_member?(actor, tenant.id, "someone@example.com", :engineer,
+           reuse_values?: true
          )
-         |> load()}
-
-      _ ->
-        {:ok,
-         socket
-         |> put_flash(:error, "That tenant does not exist, or you are not a member.")
-         |> push_navigate(to: ~p"/")}
-    end
+     )
+     |> load()}
   end
 
   defp load(socket) do
@@ -108,6 +99,7 @@ defmodule SlapdashWeb.Tenants.MembersLive do
     ~H"""
     <Layouts.app flash={@flash} current_user={@current_user}>
       <h1>{@tenant.name}</h1>
+      <.tenant_nav tenant={@tenant} current={:members} />
 
       <section aria-labelledby="members-heading">
         <h2 id="members-heading">Members</h2>

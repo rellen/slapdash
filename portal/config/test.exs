@@ -49,3 +49,6 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# Providers for tests: the real ones and a fake one (test/support).
+config :slapdash, :providers, [Slapdash.Test.FakeProvider]
