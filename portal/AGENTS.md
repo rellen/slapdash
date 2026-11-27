@@ -11,7 +11,8 @@ rules live in [`../AGENTS.md`](../AGENTS.md); this file adds the rules for
 - Elixir 1.20 on Erlang/OTP 29
 - Phoenix 1.8 with LiveView 1.2, served by Bandit
 - Ash 3 with AshPostgres (PostgreSQL 17 or later) and AshPhoenix
-- Layered, classless CSS and homegrown components, with no CSS framework
+- Layered, classless CSS and homegrown components. Do not add a CSS framework
+  or component kit such as Tailwind or daisyUI.
 - esbuild, run as a standalone binary by the `:esbuild` Mix package, bundles
   `app.js` and `app.css`, so there is no Node.js toolchain or `package.json`
 
@@ -138,10 +139,11 @@ later move is mostly mechanical. Do not add ash_grant itself.
 
 ## Multitenancy
 
-- Tenant data uses `multitenancy strategy :context`: one PostgreSQL schema per
-  tenant, `tenant_<slug>`, created by `Slapdash.Tenancy.Tenant` with
-  `manage_tenant`. Pass the tenant record as `tenant:`; `Ash.ToTenant` turns
-  it into the schema.
+- Isolate tenant data with context-based multitenancy
+  (`multitenancy strategy :context`). Do not use `strategy :attribute` for
+  tenant data. Each tenant has one PostgreSQL schema, `tenant_<slug>`,
+  created by `Slapdash.Tenancy.Tenant` with `manage_tenant`. Pass the tenant
+  record as `tenant:`; `Ash.ToTenant` turns it into the schema.
 - Install-wide data (users, instance settings, the tenant list, memberships)
   lives in the `public` schema.
 - `mix ash.codegen` writes tenant migrations to `priv/repo/tenant_migrations/`.
