@@ -32,6 +32,8 @@ rules live in [`../AGENTS.md`](../AGENTS.md); this file adds the rules for
   sets release environment defaults.
 - `nix/` holds the Nix package, NixOS module, container image, dev shell and
   VM test. The root `flake.nix` wires them up; see `../AGENTS.md`.
+- `docs/` holds the documentation, in one directory for each Diataxis type:
+  `tutorials/`, `how-to/`, `reference/` and `explanation/`.
 
 ## Commands
 
@@ -64,6 +66,9 @@ Development and test use PostgreSQL on `localhost` with user and password
   `Slapdash.Tenancy` domains, edited by root in the admin pages. One-row
   resources use an integer primary key fixed at 1 with a check constraint,
   a `:current` read action, and `:configure`/`:reconfigure` actions.
+- Connections to outside services, repositories and bot enrollments are Ash
+  resources too (`Slapdash.Connections`, `Slapdash.Repositories`,
+  `Slapdash.Bots`), edited by tenant administrators in the tenant pages.
 - `secret_key_base` and the token signing secret are generated on first boot
   and stored encrypted (`Slapdash.Instance.Boot`, `BootSecrets`). Code that
   needs them reads the application environment, which `Boot` fills.
@@ -146,6 +151,14 @@ later move is mostly mechanical. Do not add ash_grant itself.
   record as `tenant:`; `Ash.ToTenant` turns it into the schema.
 - Install-wide data (users, instance settings, the tenant list, memberships)
   lives in the `public` schema.
+- Tenant data that an incoming request must find before it knows the tenant
+  (connections and repositories) also lives in the `public` schema, with a
+  `tenant_id` and `authz tenant_attribute`.
+- A table in a tenant schema has no foreign key to a `public` table. Such a
+  key makes each tenant migration lock the public table, and parallel tenant
+  creation can then deadlock. Use `reference :name, ignore?: true`, and for
+  versions use `mixin {Slapdash.Versions, :mixin, ["<name>", [tenant?: true]]}`
+  with `define_attribute?: false` on `belongs_to_actor`.
 - `mix ash.codegen` writes tenant migrations to `priv/repo/tenant_migrations/`.
   `Slapdash.Release.migrate/0` (and so `bin/migrate`) runs them in every
   tenant schema after the public migrations.
@@ -158,11 +171,13 @@ later move is mostly mechanical. Do not add ash_grant itself.
 - Each Ash domain uses the `AshBoundary` extension and lists the domains it
   uses in its `boundary` block. Other modules use `use Boundary`:
   `Slapdash.Authz`, `Slapdash.Versions`, `Slapdash.Mailer`,
-  `Slapdash.Secrets`, `SlapdashWeb` and `Slapdash` (the application, repo,
-  vault and release tasks).
+  `Slapdash.Secrets`, `Slapdash.Providers`, `SlapdashWeb` and `Slapdash`
+  (the application, repo, vault and release tasks).
 - Dependencies go one way. From the bottom: `Slapdash.Authz`;
-  `Slapdash.Versions`; the domains,
-  `Slapdash.Mailer` and `Slapdash.Secrets`; `SlapdashWeb`; `Slapdash`.
+  `Slapdash.Versions`; the domains, `Slapdash.Mailer` and
+  `Slapdash.Secrets`; `Slapdash.Providers`; `SlapdashWeb`; `Slapdash`.
+  The domains are, from the bottom: `Accounts`, `Instance`, `Tenancy`;
+  `Connections`; `Repositories`; `Bots`; `Webhooks`.
   `boundary` rejects a dependency cycle.
 - Other parts use a domain only through its public modules: the domain, and
   the resources with a `define` in the domain. Do not call an internal
@@ -173,8 +188,8 @@ later move is mostly mechanical. Do not add ash_grant itself.
 
 ## Version history
 
-- Users, tenants, memberships and the `Slapdash.Instance` resources keep a
-  version history with AshPaperTrail. Each create, update and destroy
+- Users, tenants, memberships, connections, repositories, bot enrollments
+  and the `Slapdash.Instance` resources keep a version history with AshPaperTrail. Each create, update and destroy
   writes a snapshot, the action name and the actor to `<table>_versions`.
   `Slapdash.Versions` has the `paper_trail` block to copy into a new
   resource. Its domain needs `AshPaperTrail.Domain` with
@@ -188,6 +203,33 @@ later move is mostly mechanical. Do not add ash_grant itself.
   tenant's schema, and their migrations go to `priv/repo/tenant_migrations/`.
 - Only root reads versions of public-schema resources. Nothing writes
   versions except AshPaperTrail.
+
+## Connections, repositories, webhooks and bots
+
+`docs/explanation/bot-framework.md` tells why these parts have their shape,
+and `docs/reference/bots-and-webhooks.md` lists them.
+
+- Do not add a table, a page or an environment variable for one outside
+  service. Add a provider module that implements
+  `Slapdash.Connections.Provider` and the capability behaviours it has
+  (`Slapdash.Repositories.Host`, `Slapdash.Webhooks.Source`), put it under
+  `Slapdash.Providers`, and register it in `config :slapdash, :providers`.
+- Provider code reads secrets only with `Slapdash.Connections.secrets/1`.
+  The `secrets` field policy stops all other reads.
+- Bots implement `Slapdash.Bots.Bot` and are registered in
+  `config :slapdash, :bots`. A bot returns actions and does not call a
+  service itself. Bot code must not depend on one provider: use the
+  provider-neutral `Slapdash.Bots.Event`.
+- Make each step safe to repeat: deliveries are unique for each delivery
+  id, runs for each event id, and actions carry a key. A new action type
+  needs its own idempotency rule.
+- Oban job arguments hold ids only. Never put a payload, a token or a
+  secret in job arguments.
+- A new runner implements `Slapdash.Bots.Runner` and records its result on
+  the `Slapdash.Bots.Run` through `Slapdash.Bots.Execution` or the same
+  actions.
+- Tests use `Slapdash.Test.FakeProvider` and `Slapdash.Test.EchoBot` from
+  `test/support`, and `Req.Test` in place of real HTTP APIs.
 
 ## Security
 

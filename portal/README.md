@@ -47,6 +47,24 @@ encrypted in the database can be read, including the generated secrets.
 Development and test need none of these; `config/dev.exs` and
 `config/test.exs` hold local values.
 
+## Connections, repositories and bots
+
+Tenant administrators set up the rest in the tenant pages:
+
+- **Connections** (`/tenants/:slug/connections`): links to outside
+  services. The first kind is a GitHub App. Each connection that takes
+  webhooks has its own URL, `/webhooks/<connection id>`.
+- **Repositories** (`/tenants/:slug/repositories`): the repositories that
+  the tenant's bots work on, and the bots on each repository.
+- **Bot runs** (`/tenants/:slug/runs`): what each bot did, and why a run
+  failed.
+
+Bots run inside the portal as Oban jobs. Documentation:
+
+- How-to: [Connect a GitHub App and turn on the Greeter bot](docs/how-to/connect-a-github-app.md)
+- Reference: [Bots and webhooks](docs/reference/bots-and-webhooks.md)
+- Explanation: [The bot framework](docs/explanation/bot-framework.md)
+
 ## Onboarding root
 
 A fresh install has no users and no mail provider, so the first sign-in

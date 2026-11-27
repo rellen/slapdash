@@ -225,7 +225,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
                 type="button"
                 phx-click={event("remove")}
                 phx-value-id={connection.id}
-                data-confirm={"Remove #{connection.name}? Repositories that use it stop working."}
+                data-confirm={"Remove #{connection.name}? Its repositories and their bots are removed too."}
               >
                 Remove <span>{connection.name}</span>
               </.button>
