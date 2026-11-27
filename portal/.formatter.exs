@@ -1,6 +1,7 @@
 [
   import_deps: [
     :ash_authentication_phoenix,
+    :ash_boundary,
     :ash_authentication,
     :ash_cloak,
     :ash_phoenix,

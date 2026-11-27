@@ -8,7 +8,12 @@ defmodule Slapdash.Tenancy do
   can list a user's tenants without visiting every schema.
   """
   use Ash.Domain,
-    otp_app: :slapdash
+    otp_app: :slapdash,
+    extensions: [AshBoundary]
+
+  boundary do
+    deps [Slapdash.Authz, Slapdash.Accounts]
+  end
 
   resources do
     resource Slapdash.Tenancy.Tenant do

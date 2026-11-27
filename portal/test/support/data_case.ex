@@ -14,6 +14,9 @@ defmodule Slapdash.DataCase do
   this option is not recommended for other databases.
   """
 
+  # Test support. It may reference every boundary.
+  use Boundary, top_level?: true, check: [out: false]
+
   use ExUnit.CaseTemplate
 
   using do

@@ -4,7 +4,15 @@ defmodule Slapdash.Accounts do
   memberships are in `Slapdash.Tenancy`.
   """
   use Ash.Domain,
-    otp_app: :slapdash
+    otp_app: :slapdash,
+    extensions: [AshBoundary]
+
+  boundary do
+    deps [Slapdash.Authz, Slapdash.Instance, Slapdash.Mailer]
+    # The magic link sender builds a URL with verified routes. This is a
+    # known exception until the URL comes from a module in this domain.
+    dirty_xrefs [SlapdashWeb, SlapdashWeb.Endpoint, SlapdashWeb.Router]
+  end
 
   resources do
     resource Slapdash.Accounts.Token

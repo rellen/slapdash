@@ -13,6 +13,8 @@ defmodule Slapdash.Mailer do
   credentials included, in the metadata of its telemetry events.
   """
 
+  use Boundary, top_level?: true, deps: [Slapdash.Instance]
+
   alias Slapdash.Instance
 
   @doc "Sets the configured sender on an email and delivers it."

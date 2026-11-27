@@ -10,6 +10,8 @@ defmodule Slapdash.Secrets do
   read on each use so root can change them without a restart. The redirect
   URI is the public URL followed by `/auth`.
   """
+
+  use Boundary, top_level?: true, deps: [Slapdash.Instance]
   use AshAuthentication.Secret
 
   import Shoddy.Strings, only: [is_non_empty_string: 1]

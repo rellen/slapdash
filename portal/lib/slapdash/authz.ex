@@ -28,6 +28,15 @@ defmodule Slapdash.Authz do
   The role definitions are in `Slapdash.Authz.Roles`.
   """
 
+  # Domains use the authz DSL at compile time, so this boundary must not
+  # declare a dependency on them. `grants/1` reads users and memberships at
+  # run time. These references are known exceptions until they move.
+  use Boundary,
+    top_level?: true,
+    deps: [],
+    exports: [Check, FilterCheck, Resource, Roles],
+    dirty_xrefs: [Slapdash.Accounts.User, Slapdash.Tenancy.Membership]
+
   require Ash.Expr
   require Ash.Query
 

@@ -17,6 +17,17 @@ defmodule SlapdashWeb do
   those modules here.
   """
 
+  use Boundary,
+    deps: [
+      Slapdash.Accounts,
+      Slapdash.Authz,
+      Slapdash.Instance,
+      Slapdash.Mailer,
+      Slapdash.Secrets,
+      Slapdash.Tenancy
+    ],
+    exports: [Endpoint]
+
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def router do

@@ -8,7 +8,15 @@ defmodule Slapdash.Instance do
   `Slapdash.Authz` for who may do what.
   """
   use Ash.Domain,
-    otp_app: :slapdash
+    otp_app: :slapdash,
+    extensions: [AshBoundary]
+
+  boundary do
+    deps [Slapdash.Authz]
+    # `public_url/0` falls back to the endpoint URL. This is a known
+    # exception until the fallback comes from configuration.
+    dirty_xrefs [SlapdashWeb.Endpoint]
+  end
 
   resources do
     resource Slapdash.Instance.BootSecrets

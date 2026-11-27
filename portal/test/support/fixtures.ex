@@ -1,6 +1,9 @@
 defmodule Slapdash.Fixtures do
   @moduledoc "Builds records for tests, skipping authorization."
 
+  # Test support. It may reference every boundary.
+  use Boundary, top_level?: true, check: [out: false]
+
   alias Slapdash.Accounts.User
   alias Slapdash.Tenancy
 
