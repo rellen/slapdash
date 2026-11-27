@@ -20,6 +20,7 @@ defmodule Slapdash do
       Slapdash.Repositories,
       Slapdash.Secrets,
       Slapdash.Tenancy,
+      Slapdash.Webhooks,
       SlapdashWeb
     ]
 end

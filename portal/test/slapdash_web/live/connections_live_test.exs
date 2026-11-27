@@ -41,10 +41,12 @@ defmodule SlapdashWeb.Tenants.ConnectionsLiveTest do
     )
     |> render_submit()
 
-    assert_patch(view, ~p"/tenants/acme/connections")
-    assert render(view) =~ "Saved Fake."
-
     [connection] = Connections.list_connections!(authorize?: false)
+    assert_patch(view, ~p"/tenants/acme/connections/#{connection.id}")
+    html = render(view)
+    assert html =~ "Saved Fake."
+    assert html =~ "/webhooks/#{connection.id}</code>"
+
     assert connection.tenant_id == ctx.acme.id
     assert connection.config["account"] == 12
     assert Connections.secrets(connection) == %{"token" => "abc"}

@@ -27,7 +27,8 @@ defmodule SlapdashWeb do
       Slapdash.Mailer,
       Slapdash.Repositories,
       Slapdash.Secrets,
-      Slapdash.Tenancy
+      Slapdash.Tenancy,
+      Slapdash.Webhooks
     ],
     exports: [Endpoint]
 

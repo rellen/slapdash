@@ -71,7 +71,8 @@ config :slapdash,
     Slapdash.Tenancy,
     Slapdash.Connections,
     Slapdash.Repositories,
-    Slapdash.Bots
+    Slapdash.Bots,
+    Slapdash.Webhooks
   ],
   ash_authentication: [return_error_on_invalid_magic_link_token?: true]
 

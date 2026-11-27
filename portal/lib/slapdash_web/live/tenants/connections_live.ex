@@ -116,7 +116,7 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
         {:noreply,
          socket
          |> put_flash(:info, "Saved #{connection.name}.")
-         |> push_patch(to: ~p"/tenants/#{socket.assigns.tenant.slug}/connections")}
+         |> push_patch(to: after_save_path(socket, connection))}
 
       {:error, form} ->
         {:noreply, assign(socket, :form, form)}
@@ -134,12 +134,26 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
     end
   end
 
+  # A new connection that takes webhooks opens its change page, which shows
+  # the webhook URL to give to the service.
+  defp after_save_path(socket, connection) do
+    slug = socket.assigns.tenant.slug
+
+    if is_nil(socket.assigns.connection) and webhooks?(socket.assigns.provider),
+      do: ~p"/tenants/#{slug}/connections/#{connection.id}",
+      else: ~p"/tenants/#{slug}/connections"
+  end
+
   defp find(socket, id) do
     case Enum.find(socket.assigns.connections, &(&1.id == id)) do
       nil -> {:error, "That connection no longer exists."}
       connection -> {:ok, connection}
     end
   end
+
+  defp webhooks?(provider), do: Provider.implements?(provider, Slapdash.Webhooks.Source)
+
+  defp webhook_url(connection), do: Slapdash.Instance.url(~p"/webhooks/#{connection.id}")
 
   defp provider_label(key) do
     case Provider.fetch(key) do
@@ -245,6 +259,12 @@ defmodule SlapdashWeb.Tenants.ConnectionsLive do
           else: "Add a #{@provider.label()} connection"}
       </h2>
       <p :for={paragraph <- @help}>{paragraph}</p>
+      <p :if={@connection && webhooks?(@provider)}>
+        Webhook URL for this connection: <code>{webhook_url(@connection)}</code>
+      </p>
+      <p :if={!@connection && webhooks?(@provider)}>
+        After you save, this page shows the webhook URL for the service.
+      </p>
 
       <.form
         for={@form}

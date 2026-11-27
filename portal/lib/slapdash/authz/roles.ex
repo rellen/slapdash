@@ -26,7 +26,8 @@ defmodule Slapdash.Authz.Roles do
       "connection:*:read:always",
       "repository:*:read:always",
       "enrollment:*:read:always",
-      "run:*:read:always"
+      "run:*:read:always",
+      "delivery:*:read:always"
     ],
     signed_in: [
       "user:*:read:own",

@@ -63,10 +63,17 @@ defmodule SlapdashWeb.Router do
     delete "/sign-out", AuthController, :sign_out
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SlapdashWeb do
-  #   pipe_through :api
-  # end
+  # Outside services post webhooks here. There is no session and no CSRF
+  # token: the provider checks the signature of each request.
+  pipeline :webhook do
+    plug :accepts, ["json"]
+  end
+
+  scope "/webhooks", SlapdashWeb do
+    pipe_through :webhook
+
+    post "/:connection_id", WebhookController, :receive
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:slapdash, :dev_routes) do

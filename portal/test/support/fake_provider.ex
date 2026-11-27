@@ -6,6 +6,7 @@ defmodule Slapdash.Test.FakeProvider do
   """
   @behaviour Slapdash.Connections.Provider
   @behaviour Slapdash.Repositories.Host
+  @behaviour Slapdash.Webhooks.Source
 
   alias Slapdash.Connections.Provider.Field
 
@@ -69,6 +70,46 @@ defmodule Slapdash.Test.FakeProvider do
 
   # test_helper.exs creates the table, so it lives for the whole test run.
   defp comments_table, do: __MODULE__
+
+  @doc "The signature header value that `verify_webhook/4` accepts for a body."
+  def sign(body, token),
+    do: :crypto.mac(:hmac, :sha256, token, body) |> Base.encode16(case: :lower)
+
+  @impl Slapdash.Webhooks.Source
+  def verify_webhook(_connection, headers, raw_body, %{"token" => token}) do
+    if Plug.Crypto.secure_compare(
+         Map.get(headers, "x-fake-signature", ""),
+         sign(raw_body, token)
+       ),
+       do: :ok,
+       else: {:error, :bad_signature}
+  end
+
+  @impl Slapdash.Webhooks.Source
+  def parse_webhook(%{"x-fake-delivery" => id, "x-fake-event" => event}, _params),
+    do: {:ok, %{delivery_id: id, event: event}}
+
+  def parse_webhook(_headers, _params), do: {:error, :missing_headers}
+
+  @impl Slapdash.Webhooks.Source
+  def to_events("pull_request", %{"action" => "opened"} = payload, connection) do
+    [
+      %Slapdash.Bots.Event{
+        id: nil,
+        type: :pull_request_opened,
+        connection_id: connection.id,
+        repository_path: payload["repository"],
+        subject: %Slapdash.Bots.Subject{
+          kind: :pull_request,
+          number: payload["number"],
+          title: payload["title"]
+        },
+        sender: payload["sender"]
+      }
+    ]
+  end
+
+  def to_events(_event, _payload, _connection), do: []
 
   @impl true
   def setup_help, do: ["Make a token in the fake service."]
