@@ -51,7 +51,11 @@ config :phoenix,
   sort_verified_routes_query_params: true
 
 # Providers for tests: the real ones and a fake one (test/support).
-config :slapdash, :providers, [Slapdash.Test.FakeProvider]
+config :slapdash, :providers, [Slapdash.Providers.GitHub.App, Slapdash.Test.FakeProvider]
 
 # Bots for tests: the real ones and a test-only one (test/support).
 config :slapdash, :bots, [Slapdash.Test.EchoBot]
+
+# GitHub API calls go to Req.Test stubs in tests.
+config :slapdash, Slapdash.Providers.GitHub.Client,
+  req_options: [plug: {Req.Test, Slapdash.Providers.GitHub.Client}, retry: false]

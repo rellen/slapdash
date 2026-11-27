@@ -85,6 +85,10 @@ config :slapdash, Oban,
   queues: [webhooks: 10, bots: 10],
   plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}]
 
+# The kinds of connection that operators can add. See
+# Slapdash.Connections.Provider.
+config :slapdash, :providers, [Slapdash.Providers.GitHub.App]
+
 # Configure the endpoint
 config :slapdash, SlapdashWeb.Endpoint,
   url: [host: "localhost"],
