@@ -96,6 +96,9 @@ project. Each project keeps its Nix expressions in its own `nix/` directory
   "The maintainer wants operators to set up their own connections".
 - Write commit messages in the Conventional Commits format. See
   [Commits](#commits).
+- Organize documentation with [Diataxis](https://diataxis.fr/). Give each page
+  one of the four types: tutorial, how-to guide, reference or explanation.
+  Do not mix types on one page. Link to a page of a different type instead.
 
 ## Commits
 
