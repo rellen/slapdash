@@ -54,7 +54,7 @@ config :phoenix,
 config :slapdash, :providers, [Slapdash.Providers.GitHub.App, Slapdash.Test.FakeProvider]
 
 # Bots for tests: the real ones and a test-only one (test/support).
-config :slapdash, :bots, [Slapdash.Test.EchoBot]
+config :slapdash, :bots, [Slapdash.Bots.Greeter, Slapdash.Test.EchoBot]
 
 # GitHub API calls go to Req.Test stubs in tests.
 config :slapdash, Slapdash.Providers.GitHub.Client,

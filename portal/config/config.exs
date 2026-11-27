@@ -89,6 +89,9 @@ config :slapdash, Oban,
 # Slapdash.Connections.Provider.
 config :slapdash, :providers, [Slapdash.Providers.GitHub.App]
 
+# The bots in this install. See Slapdash.Bots.Catalogue.
+config :slapdash, :bots, [Slapdash.Bots.Greeter]
+
 # Configure the endpoint
 config :slapdash, SlapdashWeb.Endpoint,
   url: [host: "localhost"],
