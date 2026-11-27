@@ -9,10 +9,10 @@ defmodule Slapdash.Instance do
   """
   use Ash.Domain,
     otp_app: :slapdash,
-    extensions: [AshBoundary]
+    extensions: [AshBoundary, AshPaperTrail.Domain]
 
   boundary do
-    deps [Slapdash.Authz]
+    deps [Slapdash.Authz, Slapdash.Versions]
     # `public_url/0` falls back to the endpoint URL. This is a known
     # exception until the fallback comes from configuration.
     dirty_xrefs [SlapdashWeb.Endpoint]
@@ -40,6 +40,10 @@ defmodule Slapdash.Instance do
       define :reconfigure_github_oauth_app, action: :reconfigure
       define :remove_github_oauth_app, action: :remove
     end
+  end
+
+  paper_trail do
+    include_versions? true
   end
 
   @doc """

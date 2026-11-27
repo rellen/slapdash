@@ -4,6 +4,7 @@
     :ash_boundary,
     :ash_authentication,
     :ash_cloak,
+    :ash_paper_trail,
     :ash_phoenix,
     :ash_postgres,
     :ash,

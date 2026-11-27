@@ -9,10 +9,10 @@ defmodule Slapdash.Tenancy do
   """
   use Ash.Domain,
     otp_app: :slapdash,
-    extensions: [AshBoundary]
+    extensions: [AshBoundary, AshPaperTrail.Domain]
 
   boundary do
-    deps [Slapdash.Authz, Slapdash.Accounts]
+    deps [Slapdash.Authz, Slapdash.Accounts, Slapdash.Versions]
   end
 
   resources do
@@ -29,5 +29,9 @@ defmodule Slapdash.Tenancy do
       define :remove_member, action: :remove
       define :list_memberships, action: :read
     end
+  end
+
+  paper_trail do
+    include_versions? true
   end
 end

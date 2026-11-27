@@ -8,7 +8,7 @@ defmodule Slapdash.Test.TenantNote do
     domain: Slapdash.Test.Domain,
     data_layer: Ash.DataLayer.Ets,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [Slapdash.Authz.Resource]
+    extensions: [Slapdash.Authz.Resource, AshPaperTrail.Resource]
 
   ets do
     private? false
@@ -17,6 +17,11 @@ defmodule Slapdash.Test.TenantNote do
   authz do
     resource_name("tenant_note")
     scope(:own, expr(author_id == ^actor(:id)))
+  end
+
+  # Shows that versions of a `:context` resource stay in the tenant.
+  paper_trail do
+    belongs_to_actor :actor, Slapdash.Accounts.User, domain: Slapdash.Accounts
   end
 
   actions do

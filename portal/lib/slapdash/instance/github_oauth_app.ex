@@ -12,7 +12,7 @@ defmodule Slapdash.Instance.GitHubOAuthApp do
     domain: Slapdash.Instance,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshCloak, Slapdash.Authz.Resource]
+    extensions: [AshCloak, Slapdash.Authz.Resource, AshPaperTrail.Resource]
 
   authz do
     resource_name("github_oauth_app")
@@ -31,6 +31,22 @@ defmodule Slapdash.Instance.GitHubOAuthApp do
     check_constraints do
       check_constraint :id, "github_oauth_app_singleton", check: "id = 1"
     end
+  end
+
+  paper_trail do
+    mixin {Slapdash.Versions, :mixin, ["github_oauth_app_version"]}
+
+    version_extensions authorizers: [Ash.Policy.Authorizer],
+                       extensions: [Slapdash.Authz.Resource]
+
+    belongs_to_actor :actor, Slapdash.Accounts.User,
+      domain: Slapdash.Accounts,
+      on_delete: :nilify
+
+    store_action_name? true
+    reference_source? false
+    sensitive_attributes :ignore
+    ignore_attributes [:encrypted_client_secret, :inserted_at, :updated_at]
   end
 
   actions do
