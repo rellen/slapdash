@@ -16,6 +16,7 @@ defmodule Slapdash do
       Slapdash.Connections,
       Slapdash.Instance,
       Slapdash.Mailer,
+      Slapdash.Repositories,
       Slapdash.Secrets,
       Slapdash.Tenancy,
       SlapdashWeb

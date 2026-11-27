@@ -40,6 +40,13 @@ defmodule Slapdash.Fixtures do
     )
   end
 
+  def repository(connection, path \\ "acme/widgets") do
+    Slapdash.Repositories.add_repository!(
+      %{tenant_id: connection.tenant_id, connection_id: connection.id, path: path},
+      authorize?: false
+    )
+  end
+
   def unique_email, do: "user#{System.unique_integer([:positive])}@example.com"
   def unique_slug, do: "t#{System.unique_integer([:positive])}"
 end

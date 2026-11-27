@@ -65,7 +65,13 @@ config :spark,
 config :slapdash,
   ecto_repos: [Slapdash.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Slapdash.Accounts, Slapdash.Instance, Slapdash.Tenancy, Slapdash.Connections],
+  ash_domains: [
+    Slapdash.Accounts,
+    Slapdash.Instance,
+    Slapdash.Tenancy,
+    Slapdash.Connections,
+    Slapdash.Repositories
+  ],
   ash_authentication: [return_error_on_invalid_magic_link_token?: true]
 
 # Background jobs. Oban keeps its tables in the `public` schema. Job
