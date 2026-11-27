@@ -96,6 +96,8 @@ defmodule Slapdash.MixProject do
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.16"},
       {:req, "~> 0.5"},
+      # Background jobs: webhook processing and in-process bot runs.
+      {:oban, "~> 2.20"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},

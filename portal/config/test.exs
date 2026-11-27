@@ -27,6 +27,9 @@ config :slapdash, SlapdashWeb.Endpoint,
   secret_key_base: "CflAseZ0eO/7P0YDfs8mSE6IWlhPtiQRlajwgCajBxrUtGHlX+jMX0PqKmeV3p3E",
   server: false
 
+# Jobs run only when a test runs them (Oban.Testing).
+config :slapdash, Oban, testing: :manual
+
 # In test we don't send emails
 config :slapdash, Slapdash.Mailer, adapter: Swoosh.Adapters.Test
 

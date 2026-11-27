@@ -68,6 +68,15 @@ config :slapdash,
   ash_domains: [Slapdash.Accounts, Slapdash.Instance, Slapdash.Tenancy],
   ash_authentication: [return_error_on_invalid_magic_link_token?: true]
 
+# Background jobs. Oban keeps its tables in the `public` schema. Job
+# arguments hold ids only, never secrets (see "Security" in AGENTS.md).
+config :slapdash, Oban,
+  engine: Oban.Engines.Basic,
+  notifier: Oban.Notifiers.Postgres,
+  repo: Slapdash.Repo,
+  queues: [webhooks: 10, bots: 10],
+  plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}]
+
 # Configure the endpoint
 config :slapdash, SlapdashWeb.Endpoint,
   url: [host: "localhost"],

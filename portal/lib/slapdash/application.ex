@@ -15,8 +15,7 @@ defmodule Slapdash.Application do
       # signing secret, so it must start before the endpoint.
       Slapdash.Instance.Boot,
       {Phoenix.PubSub, name: Slapdash.PubSub},
-      # Start a worker by calling: Slapdash.Worker.start_link(arg)
-      # {Slapdash.Worker, arg},
+      {Oban, Application.fetch_env!(:slapdash, Oban)},
       {AshAuthentication.Supervisor, [otp_app: :slapdash]},
       # Start to serve requests, typically the last entry
       SlapdashWeb.Endpoint
