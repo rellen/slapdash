@@ -9,6 +9,8 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
   import SlapdashWeb.AdminComponents, only: [error_message: 1]
   import SlapdashWeb.TenantComponents
 
+  alias Slapdash.Bots
+  alias Slapdash.Bots.Catalogue
   alias Slapdash.Connections
   alias Slapdash.Repositories
 
@@ -26,6 +28,7 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
      |> assign(
        page_title: "#{tenant.name} repositories",
        hosts: hosts,
+       bots: Catalogue.all(),
        manage?: Repositories.can_add_repository?(actor, %{tenant_id: tenant.id})
      )
      |> load()}
@@ -49,7 +52,11 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
       )
       |> to_form()
 
-    assign(socket, repositories: repositories, form: form)
+    enrollments =
+      Bots.list_enrollments!(tenant: tenant, actor: actor)
+      |> Map.new(&{{&1.repository_id, &1.bot}, &1})
+
+    assign(socket, repositories: repositories, enrollments: enrollments, form: form)
   end
 
   @impl true
@@ -64,6 +71,21 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
 
       {:error, form} ->
         {:noreply, assign(socket, :form, form)}
+    end
+  end
+
+  def handle_event("toggle_bot", %{"id" => id, "bot" => bot}, socket) do
+    %{current_user: actor, tenant: tenant} = socket.assigns
+
+    result =
+      case Map.fetch(socket.assigns.enrollments, {id, bot}) do
+        {:ok, enrollment} -> Bots.unenroll(enrollment, tenant: tenant, actor: actor)
+        :error -> Bots.enroll(id, bot, tenant: tenant, actor: actor)
+      end
+
+    case result do
+      {:error, error} -> {:noreply, put_flash(socket, :error, error_message(error))}
+      _ok -> {:noreply, socket |> put_flash(:info, "Bot changed.") |> load()}
     end
   end
 
@@ -98,6 +120,7 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
             <tr>
               <th scope="col">Repository</th>
               <th scope="col">Connection</th>
+              <th :if={@bots != []} scope="col">Bots</th>
               <th :if={@manage?} scope="col"><span>Actions</span></th>
             </tr>
           </thead>
@@ -112,6 +135,18 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
                 </.wrap_if>
               </th>
               <td>{repository.connection.name}</td>
+              <td :if={@bots != []}>
+                <ul>
+                  <li :for={bot <- @bots}>
+                    <.bot_toggle
+                      bot={bot}
+                      repository={repository}
+                      on?={Map.has_key?(@enrollments, {repository.id, bot.key()})}
+                      manage?={@manage?}
+                    />
+                  </li>
+                </ul>
+              </td>
               <td :if={@manage?}>
                 <.button
                   type="button"
@@ -157,6 +192,27 @@ defmodule SlapdashWeb.Tenants.RepositoriesLive do
         </.choose>
       </section>
     </Layouts.app>
+    """
+  end
+
+  attr :bot, :atom, required: true
+  attr :repository, :map, required: true
+  attr :on?, :boolean, required: true
+  attr :manage?, :boolean, required: true
+
+  # The state is in the text, and the button names the change it makes.
+  defp bot_toggle(assigns) do
+    ~H"""
+    {@bot.name()}: {if @on?, do: "on", else: "off"}
+    <.button
+      :if={@manage?}
+      type="button"
+      phx-click={event("toggle_bot")}
+      phx-value-id={@repository.id}
+      phx-value-bot={@bot.key()}
+    >
+      {if @on?, do: "Turn off", else: "Turn on"} <span>{@bot.name()} for {@repository.path}</span>
+    </.button>
     """
   end
 end

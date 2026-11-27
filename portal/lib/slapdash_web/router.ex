@@ -45,6 +45,7 @@ defmodule SlapdashWeb.Router do
       live "/tenants/:slug/connections/new/:provider", Tenants.ConnectionsLive, :new
       live "/tenants/:slug/connections/:id", Tenants.ConnectionsLive, :edit
       live "/tenants/:slug/repositories", Tenants.RepositoriesLive
+      live "/tenants/:slug/runs", Tenants.RunsLive
     end
   end
 

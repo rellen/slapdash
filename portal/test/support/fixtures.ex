@@ -47,6 +47,33 @@ defmodule Slapdash.Fixtures do
     )
   end
 
+  def enrollment(repository, bot \\ "echo", settings \\ %{}) do
+    tenant = Tenancy.get_tenant!(repository.tenant_id, authorize?: false)
+
+    Slapdash.Bots.Enrollment
+    |> Ash.Changeset.for_create(
+      :enroll,
+      %{repository_id: repository.id, bot: bot, settings: settings},
+      tenant: tenant,
+      authorize?: false
+    )
+    |> Ash.create!()
+  end
+
+  def pull_request_opened(repository, attrs \\ %{}) do
+    struct!(
+      %Slapdash.Bots.Event{
+        id: "test:#{System.unique_integer([:positive])}",
+        type: :pull_request_opened,
+        connection_id: repository.connection_id,
+        repository_path: to_string(repository.path),
+        subject: %Slapdash.Bots.Subject{kind: :pull_request, number: 7, title: "Add a thing"},
+        sender: "octo"
+      },
+      attrs
+    )
+  end
+
   def unique_email, do: "user#{System.unique_integer([:positive])}@example.com"
   def unique_slug, do: "t#{System.unique_integer([:positive])}"
 end

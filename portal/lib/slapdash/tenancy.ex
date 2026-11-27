@@ -21,6 +21,7 @@ defmodule Slapdash.Tenancy do
       define :rename_tenant, action: :rename, args: [:name]
       define :list_tenants, action: :read
       define :get_tenant_by_slug, action: :read, get_by: [:slug]
+      define :get_tenant, action: :read, get_by: [:id]
     end
 
     resource Slapdash.Tenancy.Membership do

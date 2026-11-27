@@ -70,7 +70,8 @@ config :slapdash,
     Slapdash.Instance,
     Slapdash.Tenancy,
     Slapdash.Connections,
-    Slapdash.Repositories
+    Slapdash.Repositories,
+    Slapdash.Bots
   ],
   ash_authentication: [return_error_on_invalid_magic_link_token?: true]
 

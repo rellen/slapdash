@@ -55,9 +55,31 @@ defmodule Slapdash.Versions do
   @doc """
   The body that AshPaperTrail adds to a version resource: its name for
   permission strings, an index on the source id, and its policies.
+
+  Give `tenant?: true` for a resource that uses `multitenancy strategy
+  :context`, and give its `belongs_to_actor` the option
+  `define_attribute?: false`. Its versions are in the tenant schema, and
+  `actor_id` then has no foreign key to `public.users`. Such a key makes
+  each tenant migration lock the users table, and tenant creation can
+  then wait for, or deadlock with, transactions that write users.
   """
-  @spec mixin(String.t()) :: Macro.t()
-  def mixin(resource_name) when is_binary(resource_name) do
+  @spec mixin(String.t(), keyword()) :: Macro.t()
+  def mixin(resource_name, opts \\ []) when is_binary(resource_name) do
+    actor_attribute =
+      if Keyword.get(opts, :tenant?, false) do
+        quote do
+          postgres do
+            references do
+              reference(:actor, ignore?: true)
+            end
+          end
+
+          attributes do
+            attribute(:actor_id, :uuid, public?: true)
+          end
+        end
+      end
+
     quote do
       authz do
         resource_name(unquote(resource_name))
@@ -69,6 +91,8 @@ defmodule Slapdash.Versions do
           index([:version_source_id])
         end
       end
+
+      unquote(actor_attribute)
 
       policies do
         bypass context_equals(:ash_paper_trail?, true) do

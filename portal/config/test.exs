@@ -52,3 +52,6 @@ config :phoenix,
 
 # Providers for tests: the real ones and a fake one (test/support).
 config :slapdash, :providers, [Slapdash.Test.FakeProvider]
+
+# Bots for tests: the real ones and a test-only one (test/support).
+config :slapdash, :bots, [Slapdash.Test.EchoBot]

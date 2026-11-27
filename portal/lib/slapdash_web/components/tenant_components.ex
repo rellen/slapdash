@@ -14,7 +14,8 @@ defmodule SlapdashWeb.TenantComponents do
       assign(assigns, :pages, [
         {:members, "Members", ~p"/tenants/#{assigns.tenant.slug}/members"},
         {:connections, "Connections", ~p"/tenants/#{assigns.tenant.slug}/connections"},
-        {:repositories, "Repositories", ~p"/tenants/#{assigns.tenant.slug}/repositories"}
+        {:repositories, "Repositories", ~p"/tenants/#{assigns.tenant.slug}/repositories"},
+        {:runs, "Bot runs", ~p"/tenants/#{assigns.tenant.slug}/runs"}
       ])
 
     ~H"""

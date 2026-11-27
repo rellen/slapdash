@@ -37,7 +37,21 @@ defmodule SlapdashWeb.Tenants.RepositoriesLiveTest do
     assert html =~ "Fake host"
 
     [repository] = Slapdash.Repositories.list_repositories!(authorize?: false)
-    view |> element("#repository-#{repository.id} button") |> render_click()
+    view |> element("#repository-#{repository.id} button", "Remove") |> render_click()
     assert render(view) =~ "This tenant has no repositories yet."
+  end
+
+  test "an administrator turns a bot on and off for a repository", ctx do
+    repository = repository(connection(ctx.acme))
+    {:ok, view, html} = ctx.conn |> log_in(ctx.admin) |> live(~p"/tenants/acme/repositories")
+    assert html =~ "Echo: off"
+
+    view |> element("button", "Turn on Echo for acme/widgets") |> render_click()
+    assert render(view) =~ "Echo: on"
+    assert [_] = Slapdash.Bots.list_enrollments!(tenant: ctx.acme, authorize?: false)
+
+    view |> element("#repository-#{repository.id} button", "Turn off") |> render_click()
+    assert render(view) =~ "Echo: off"
+    assert [] = Slapdash.Bots.list_enrollments!(tenant: ctx.acme, authorize?: false)
   end
 end
